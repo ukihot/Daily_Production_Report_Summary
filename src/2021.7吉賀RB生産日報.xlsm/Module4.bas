@@ -10,7 +10,7 @@ Public Sub 当月実績追加処理()
 Dim MBk As String, sagyohyo_sheet As String, machine_name_sheet As String, MSt3 As String
 Dim active_workbook_name As String, nippo_nyuryoku_sheet As String, nippo_syukei_sheet As String
 Dim MCl1, MCl2, MCl3 As Object
-Dim NNCl As Object, NSCl As Object
+Dim nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object
 Dim i As Integer, InM As Integer, Lcnt As Integer
 Dim Com1, Com2, Com3, Com5, Com6, Com7, Com8, Com9, Com10 As Long
 Dim Com11, Com12, Com13, Com14, Com15, Com16, Com17, Com18, Com19, ComWK As Long
@@ -57,29 +57,29 @@ nippo_nyuryoku_sheet = "日報入力"
     Range("A5").Select
     
     '処理開始位置の設定
-    Set NSCl = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
-    Set NNCl = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
+    Set nippo_syukei_cell = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
+    Set nippo_nyuryoku_cell = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
     Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
     
     '日報集計シートの更新
-    Call NippouShuukei_Update(NNCl, NSCl)
+    Call NippouShuukei_Update(nippo_nyuryoku_cell, nippo_syukei_cell)
 
     '処理開始位置の設定
-    Set NSCl = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
-    Set NNCl = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
+    Set nippo_syukei_cell = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
+    Set nippo_nyuryoku_cell = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
 
     '実績データ確認
     n = 1
-    Do Until NSCl.Value = ""
+    Do Until nippo_syukei_cell.Value = ""
        'Application.StatusBar = "日報集計から作業表を作成中・・・　" & n & "レコード目"
-       With NSCl
+       With nippo_syukei_cell
          'データ移行
           For i = 0 To 39
               MCl1.Offset(0, i).Value = .Offset(0, i).Value
           Next i
        End With
        Set MCl1 = MCl1.Offset(1, 0)
-       Set NSCl = NSCl.Offset(1, 0)
+       Set nippo_syukei_cell = nippo_syukei_cell.Offset(1, 0)
     Loop
 
 
