@@ -11,7 +11,7 @@ Public Sub NippouShuukei_Update(NNCl As Object, NSCl As Object)
     '作業表作成
     n = 1
     Do Until NNCl.Value = ""
-        Application.StatusBar = "日報入力から日報集計を作成中・・・　" & n & "レコード目"
+        'Application.StatusBar = "日報入力から日報集計を作成中・・・　" & n & "レコード目"
         NSCl.Offset(0, 0).Value = NNCl.Offset(0, 0).Value '生産日
         NSCl.Offset(0, 1).Value = NNCl.Offset(0, 1).Value 'マシン
         NSCl.Offset(0, 2).Value = NNCl.Offset(0, 2).Value '作業者
@@ -63,5 +63,3 @@ Public Sub NippouShuukei_Update(NNCl As Object, NSCl As Object)
     Application.StatusBar = False
     
 End Sub
-
-

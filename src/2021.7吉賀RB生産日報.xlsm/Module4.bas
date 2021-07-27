@@ -7,8 +7,8 @@ Public NSU As Long 'NippouShuukeiUpdateFlug
 
 Public Sub 当月実績追加処理()
 
-Dim MBk As String, MSt1 As String, MSt2 As String, MSt3 As String
-Dim ABk As String, NNSt As String, NSSt As String
+Dim MBk As String, sagyohyo_sheet As String, machine_name_sheet As String, MSt3 As String
+Dim active_workbook_name As String, nippo_nyuryoku_sheet As String, nippo_syukei_sheet As String
 Dim MCl1, MCl2, MCl3 As Object
 Dim NNCl As Object, NSCl As Object
 Dim i As Integer, InM As Integer, Lcnt As Integer
@@ -33,15 +33,15 @@ Application.ScreenUpdating = False
 '20100221改訂 s.tanaka
 '20130313改訂 k.kometani
 
-MSt1 = "作業表"
-MSt2 = "マシン名"
-ABk = ActiveWorkbook.Name
-NSSt = "日報集計"
-NNSt = "日報入力"
+sagyohyo_sheet = "作業表"
+machine_name_sheet = "マシン名"
+active_workbook_name = ActiveWorkbook.Name
+nippo_syukei_sheet = "日報集計"
+nippo_nyuryoku_sheet = "日報入力"
 
 
 '処理開始
-    myMsg = "当月実績追加処理を開始しますか？"
+    myMsg = "当月実績追加処理を開始します"
     myTitle = "当月実績追加処理"
     
     myBtn = MsgBox(myMsg, vbYesNo + vbExclamation, myTitle)
@@ -51,27 +51,27 @@ NNSt = "日報入力"
     End If
    
     '作業領域クリア（作業表）
-    Worksheets(MSt1).Activate
+    Worksheets(sagyohyo_sheet).Activate
     Range("A5:AM2000").Select
     Selection.ClearContents
     Range("A5").Select
     
     '処理開始位置の設定
-    Set NSCl = Workbooks(ABk).Worksheets(NSSt).Range("A5")
-    Set NNCl = Workbooks(ABk).Worksheets(NNSt).Range("G5")
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set NSCl = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
+    Set NNCl = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
     
     '日報集計シートの更新
     Call NippouShuukei_Update(NNCl, NSCl)
 
     '処理開始位置の設定
-    Set NSCl = Workbooks(ABk).Worksheets(NSSt).Range("A5")
-    Set NNCl = Workbooks(ABk).Worksheets(NNSt).Range("G5")
+    Set NSCl = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
+    Set NNCl = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
 
     '実績データ確認
     n = 1
     Do Until NSCl.Value = ""
-       Application.StatusBar = "日報集計から作業表を作成中・・・　" & n & "レコード目"
+       'Application.StatusBar = "日報集計から作業表を作成中・・・　" & n & "レコード目"
        With NSCl
          'データ移行
           For i = 0 To 39
@@ -84,11 +84,11 @@ NNSt = "日報入力"
 
 
 'マシン別集計作業開始
-    Application.StatusBar = "マシン別集計中・・・　"
+    'Application.StatusBar = "マシン別集計中・・・　"
    '作業用ワークシートアクティブ化（作業表）
-    Worksheets(MSt1).Activate
+    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
    'インデックス初期化
     i = 4
    '実データ領域確認
@@ -102,7 +102,7 @@ NNSt = "日報入力"
     Key1:=Columns("B")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com1 = 0    'ショット
@@ -151,7 +151,7 @@ NNSt = "日報入力"
    '作業用ワークシートアクティブ化（マシン別－該当月）
     Worksheets(GetMM).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A7")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
    'インデックス初期値
     i = 7
    '実データ領域確認
@@ -164,8 +164,8 @@ NNSt = "日報入力"
     Selection.ClearContents
 
 'マシン名取り込み
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A7")
-    Set MCl3 = Workbooks(ABk).Worksheets(MSt2).Range("B4")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
+    Set MCl3 = Workbooks(active_workbook_name).Worksheets(machine_name_sheet).Range("B4")
     Do Until MCl3.Value = ""
        If MCl3.Offset(0, 1).Value <> "" Then
           MCl2.Offset(0, 0).Value = MCl3.Offset(0, 0).Value
@@ -179,7 +179,7 @@ NNSt = "日報入力"
    'マシン別集計
     Do Until MCl1.Value = ""
        '追加先シート処理開始位置指定
-       Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A7")
+       Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
        Do Until BKcd <> MCl1.Offset(0, 1).Value
           Com1 = Com1 + MCl1.Offset(0, 4).Value
           Com2 = Com2 + MCl1.Offset(0, 5).Value
@@ -314,11 +314,11 @@ NNSt = "日報入力"
 
 
 '品名別集計作業開始
-    Application.StatusBar = "品名別集計中・・・　"
+    'Application.StatusBar = "品名別集計中・・・　"
    '作業用ワークシートアクティブ化（作業表）
-    Worksheets(MSt1).Activate
+    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    'インデックス初期化
     i = 4
@@ -334,7 +334,7 @@ NNSt = "日報入力"
     Key1:=Columns("D")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com1 = 0    'ショット
@@ -382,7 +382,7 @@ NNSt = "日報入力"
    '作業用ワークシートアクティブ化（マシン別－該当月）
     Worksheets(GetMM).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A7")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
    'インデックス初期値
     i = 7
    '実データ領域確認
@@ -396,7 +396,7 @@ NNSt = "日報入力"
 '
 '実績追加処理－品名別
    '追加先シート処理開始位置指定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A7")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
 
    '品名別集計
     Do Until MCl1.Value = ""
@@ -525,7 +525,7 @@ NNSt = "日報入力"
     Worksheets(GetMM).Activate
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(GetMM).Range("B7")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("B7")
 
    'インデックス初期化
     i = 7
@@ -541,7 +541,7 @@ NNSt = "日報入力"
     Key1:=Columns("Z"), Order1:=xlDescending
 
 '品名に通番付与（生産金額順）
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("B7")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("B7")
    'カウント初期化
     Lcnt = 1
    '実行
@@ -563,11 +563,11 @@ NNSt = "日報入力"
 
 '20091120追加不良別集計
 'マシン別不良集計作業開始
-    Application.StatusBar = "マシン別不良集計中・・・　"
+    'Application.StatusBar = "マシン別不良集計中・・・　"
    '作業用ワークシートアクティブ化（作業表）
-    Worksheets(MSt1).Activate
+    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
    'インデックス初期化
     i = 4
    '実データ領域確認
@@ -581,7 +581,7 @@ NNSt = "日報入力"
     Key1:=Columns("B")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com17 = 0   '手直不良（良品に含まれる）
@@ -605,7 +605,7 @@ NNSt = "日報入力"
    '作業用ワークシートアクティブ化
     Worksheets(GetMM).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A6")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
    'インデックス初期値
     i = 5
    '実データ領域確認
@@ -618,8 +618,8 @@ NNSt = "日報入力"
     Selection.ClearContents
 
 'マシン名取り込み
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A6")
-    Set MCl3 = Workbooks(ABk).Worksheets(MSt2).Range("B4")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
+    Set MCl3 = Workbooks(active_workbook_name).Worksheets(machine_name_sheet).Range("B4")
     Do Until MCl3.Value = ""
        If MCl3.Offset(0, 1).Value <> "" Then
           MCl2.Offset(0, 0).Value = MCl3.Offset(0, 0).Value
@@ -631,7 +631,7 @@ NNSt = "日報入力"
 
 '実績追加処理－マシン別
    '追加先シート処理開始位置指定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A6")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
 
    'マシン別集計
     Do Until MCl1.Value = ""
@@ -717,11 +717,11 @@ NNSt = "日報入力"
 '*********************************************************************************
 
 '品名別不良集計作業開始
-    Application.StatusBar = "品名別不良集計中・・・　"
+    'Application.StatusBar = "品名別不良集計中・・・　"
    '作業用ワークシートアクティブ化（作業表）
-    Worksheets(MSt1).Activate
+    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    'インデックス初期化
     i = 4
@@ -737,7 +737,7 @@ NNSt = "日報入力"
     Key1:=Columns("D")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(ABk).Worksheets(MSt1).Range("A5")
+    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com17 = 0   '手直不良（良品に含まれる）
@@ -761,7 +761,7 @@ NNSt = "日報入力"
    '作業用ワークシートアクティブ化（品名別－該当月）
     Worksheets(GetMM).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A6")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
    'インデックス初期値
     i = 5
    '実データ領域確認
@@ -776,7 +776,7 @@ NNSt = "日報入力"
 
 '実績追加処理－品名別
    '追加先シート処理開始位置指定
-    Set MCl2 = Workbooks(ABk).Worksheets(GetMM).Range("A6")
+    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
 
    '品名別集計
     Do Until MCl1.Value = ""
@@ -1042,7 +1042,7 @@ rt1:
    '位置の設定
     Range("A1").Select
     
-    Application.StatusBar = False
+    'Application.StatusBar = False
     Application.ScreenUpdating = True
     MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
 End Sub
