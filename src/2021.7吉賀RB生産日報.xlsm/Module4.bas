@@ -15,8 +15,8 @@ Public Sub 当月実績追加処理()
    Dim SVtime, count As Long
    Dim WkCom As Double
    Dim myBtn As Integer
-   Dim BKcd As String
-   Dim BKmn As String
+   Dim bk_machine_code As String
+   Dim bk_user_code As String
    Dim summary_by_machine As String
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
@@ -66,6 +66,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    'マシン別集計作業開始
+   'TODO:中子別で集計する。
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
@@ -118,12 +119,14 @@ Public Sub 当月実績追加処理()
    Com31 = 0   '不良金額
    Com32 = 0   '良品数
    ComWK = 0   '計算ワーク
-   SVtime = 0  '出勤総時間
+   SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value  '出勤総時間
    count = 0   '金型交換回数
 
-   BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
-   BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
-   SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value
+   Dim daily_report_item(35) As Integer
+   Erase daily_report_item
+
+   bk_machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+   bk_user_code = first_cell_of_sagyohyo.Offset(0, 2).Value
 
    summary_by_machine = "マシン別集計"
 
@@ -160,7 +163,7 @@ Public Sub 当月実績追加処理()
    Do Until first_cell_of_sagyohyo.Value = ""
       '追加先シート処理開始位置指定
       Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(summary_by_machine).Range("A7")
-      Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 1).Value
+      Do Until bk_machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
          Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
          Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
          Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
@@ -190,10 +193,9 @@ Public Sub 当月実績追加処理()
          Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
-   '生産時間算出
-   'ComWK = Com2 - Com3 - Com4 - Com5 - Com6 - Com7 - Com8 - Com9 - Com10 - Com11 - Com12
-   'マシンコード位置設定
-      Do Until BKcd = first_cell_of_merchandise_summary.Offset(0, 0).Value
+
+      'マシンコード位置設定
+      Do Until bk_machine_code = first_cell_of_merchandise_summary.Offset(0, 0).Value
          Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
       Loop
 
@@ -236,8 +238,8 @@ Public Sub 当月実績追加処理()
       End With
 
       Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
-      BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
-      BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
+      bk_machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+      bk_user_code = first_cell_of_sagyohyo.Offset(0, 2).Value
       '作業エリア初期化
       Com1 = 0   'ショット
       Com2 = 0   '稼動時間
@@ -329,8 +331,8 @@ Public Sub 当月実績追加処理()
    ComWK = 0   '計算ワーク
    count = 0   '金型交換回数
 
-   BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value      '中子コード
-   BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value      '中子名
+   bk_machine_code = first_cell_of_sagyohyo.Offset(0, 3).Value      '中子コード
+   bk_user_code = first_cell_of_sagyohyo.Offset(0, 39).Value      '中子名
 
    summary_by_machine = "品名別集計"
 
@@ -355,7 +357,7 @@ Public Sub 当月実績追加処理()
    Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(summary_by_machine).Range("A7")
    '品名別集計
    Do Until first_cell_of_sagyohyo.Value = ""
-      Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 3).Value
+      Do Until bk_machine_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
          Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
          Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
          Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
@@ -389,8 +391,8 @@ Public Sub 当月実績追加処理()
       'ComWK = Com2 - Com3 - Com4 - Com5 - Com6 - Com7 - Com8 - Com9 - Com10 - Com11 - Com12
 
       With first_cell_of_merchandise_summary  '20140408kometani  中子コードを記入するセルを追加したことで右に1個ずつずらした
-         .Offset(0, 1).Value = BKmn      '中子名
-         .Offset(0, 2).Value = BKcd      '中子コード　'20140408kometani　追加
+         .Offset(0, 1).Value = bk_user_code      '中子名
+         .Offset(0, 2).Value = bk_machine_code      '中子コード　'20140408kometani　追加
          .Offset(0, 3).Value = Com1      'ショット数
          .Offset(0, 4).Value = Com32     '良品数
          .Offset(0, 5).Value = Com18     '不良数
@@ -438,8 +440,8 @@ Public Sub 当月実績追加処理()
       End With
 
       Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
-      BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value
-      BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value
+      bk_machine_code = first_cell_of_sagyohyo.Offset(0, 3).Value
+      bk_user_code = first_cell_of_sagyohyo.Offset(0, 39).Value
 
       '作業エリア初期化
       Com1 = 0   'ショット
@@ -534,8 +536,8 @@ Public Sub 当月実績追加処理()
    Com26 = 0   'その他
    Com32 = 0   '良品数
    ComWK = 0   '計算ワーク
-   BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
-   BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
+   bk_machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+   bk_user_code = first_cell_of_sagyohyo.Offset(0, 2).Value
 
    summary_by_machine = "不良集計【マシン】"
 
@@ -573,7 +575,7 @@ Public Sub 当月実績追加処理()
 
    'マシン別集計
    Do Until first_cell_of_sagyohyo.Value = ""
-      Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 1).Value
+      Do Until bk_machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
          Com19 = Com19 + first_cell_of_sagyohyo.Offset(0, 22).Value
@@ -588,12 +590,12 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
       'マシンコード位置設定
-      Do Until BKcd = first_cell_of_merchandise_summary.Offset(0, 0).Value
+      Do Until bk_machine_code = first_cell_of_merchandise_summary.Offset(0, 0).Value
          Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
       Loop
       With first_cell_of_merchandise_summary
-         '.Offset(0, 0).Value = BKcd      'マシンコード
-         '.Offset(0, 1).Value = BKmn      'マシン名
+         '.Offset(0, 0).Value = bk_machine_code      'マシンコード
+         '.Offset(0, 1).Value = bk_user_code      'マシン名
          .Offset(0, 2).Value = Com32     '良品数
          .Offset(0, 3).Value = Com18     '不良数
          .Offset(0, 4).Value = Com19     'ボス割れ表
@@ -623,8 +625,8 @@ Public Sub 当月実績追加処理()
 
       End With
       Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
-      BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
-      BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
+      bk_machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+      bk_user_code = first_cell_of_sagyohyo.Offset(0, 2).Value
       '作業エリア初期化
       Com17 = 0   '手直不良（良品に含まれる）
       Com18 = 0   '廃棄不良
@@ -680,8 +682,8 @@ Public Sub 当月実績追加処理()
    Com26 = 0   'その他
    Com32 = 0   '良品数
    ComWK = 0   '計算ワーク
-   BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value      '中子コード
-   BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value      '中子名
+   bk_machine_code = first_cell_of_sagyohyo.Offset(0, 3).Value      '中子コード
+   bk_user_code = first_cell_of_sagyohyo.Offset(0, 39).Value      '中子名
    summary_by_machine = "不良集計【品名】"
 
    '追加先シート初期化
@@ -707,7 +709,7 @@ Public Sub 当月実績追加処理()
 
    '品名別集計
    Do Until first_cell_of_sagyohyo.Value = ""
-      Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 3).Value
+      Do Until bk_machine_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
          Com19 = Com19 + first_cell_of_sagyohyo.Offset(0, 22).Value
@@ -722,8 +724,8 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
       With first_cell_of_merchandise_summary
-         .Offset(0, 0).Value = BKcd      '中子コード
-         .Offset(0, 1).Value = BKmn      '中子名
+         .Offset(0, 0).Value = bk_machine_code      '中子コード
+         .Offset(0, 1).Value = bk_user_code      '中子名
          .Offset(0, 2).Value = Com32     '良品数
          .Offset(0, 3).Value = Com18     '不良数
          .Offset(0, 4).Value = Com19     'ボス割れ表
@@ -751,8 +753,8 @@ Public Sub 当月実績追加処理()
          .Offset(0, 14).Value = WkCom    '手直不良率
       End With
       Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
-      BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value
-      BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value
+      bk_machine_code = first_cell_of_sagyohyo.Offset(0, 3).Value
+      bk_user_code = first_cell_of_sagyohyo.Offset(0, 39).Value
    '作業エリア初期化
       Com17 = 0   '手直不良（良品に含まれる）
       Com18 = 0   '廃棄不良
