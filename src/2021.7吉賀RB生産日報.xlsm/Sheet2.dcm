@@ -1,38 +1,38 @@
-VERSION 1.0 CLASS
-BEGIN
-  MultiUse = -1  'True
-END
-Attribute VB_Name = "Sheet2"
-Attribute VB_GlobalNameSpace = False
-Attribute VB_Creatable = False
-Attribute VB_PredeclaredId = True
-Attribute VB_Exposed = True
-Option Explicit
-
-Private Sub Worksheet_Activate()
-    
-    Dim NNSt As String
-    Dim NSSt As String
-    Dim TBk As String
-    Dim NSCl As Object
-    Dim NNCl As Object
-    Dim n As Long
-    
-    
-    Application.ScreenUpdating = False
-    
-    NNSt = "日報入力"
-    NSSt = "日報集計"
-    TBk = ThisWorkbook.Name
-    
-    Set NSCl = Workbooks(TBk).Worksheets(NSSt).Range("A5")
-    Set NNCl = Workbooks(TBk).Worksheets(NNSt).Range("G5")
-    
-    If NNC <> 0 Then
-        Call NippouShuukei_Update(NNCl, NSCl)
-    End If
-    
-    Application.ScreenUpdating = True
-
-End Sub
+'VERSION 1.0 CLASS
+'BEGIN
+'  MultiUse = -1  'True
+'END
+'Attribute VB_Name = "Sheet2"
+'Attribute VB_GlobalNameSpace = False
+'Attribute VB_Creatable = False
+'Attribute VB_PredeclaredId = True
+'Attribute VB_Exposed = True
+'Option Explicit
+'
+'Private Sub Worksheet_Activate()
+'    
+'    Dim NNSt As String
+'    Dim NSSt As String
+'    Dim TBk As String
+'    Dim NSCl As Object
+'    Dim NNCl As Object
+'    Dim n As Long
+'    
+'    
+'    Application.ScreenUpdating = False
+'    
+'    NNSt = "日報入力"
+'    NSSt = "日報集計"
+'    TBk = ThisWorkbook.Name
+'    
+'    Set NSCl = Workbooks(TBk).Worksheets(NSSt).Range("A5")
+'    Set NNCl = Workbooks(TBk).Worksheets(NNSt).Range("G5")
+'    
+'    If NNC <> 0 Then
+'        Call NippouShuukei_Update(NNCl, NSCl)
+'    End If
+'    
+'    Application.ScreenUpdating = True
+'
+'End Sub
 

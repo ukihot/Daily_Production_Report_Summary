@@ -1,10 +1,6 @@
 Attribute VB_Name = "Module4"
 'Option Explicit
 
-Public NNC As Long 'NippouNyuuryokuChangeFlug
-Public NSU As Long 'NippouShuukeiUpdateFlug
-
-
 Public Sub 当月実績追加処理()
 
 Dim MBk As String, sagyohyo_sheet As String, machine_name_sheet As String, MSt3 As String
@@ -27,16 +23,15 @@ Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
 
 '初期設定
 Application.ScreenUpdating = False
+active_workbook_name = ActiveWorkbook.Name
 
 machine_name_sheet = "マシン名"
-active_workbook_name = ActiveWorkbook.Name
 nippo_syukei_sheet = "日報集計"
 nippo_nyuryoku_sheet = "日報入力"
 sagyohyo_sheet = "作業表"
 
 '処理開始
     myBtn = MsgBox("当月実績追加処理を開始します", vbYesNo + vbExclamation, "当月実績追加処理")
-
     If myBtn = vbNo Then
        Exit Sub
     End If
@@ -60,7 +55,6 @@ sagyohyo_sheet = "作業表"
     Set nippo_nyuryoku_cell = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
 
     '実績データ確認
-    n = 1
     Do Until nippo_syukei_cell.Value = ""
        With nippo_syukei_cell
          'データ移行
@@ -72,19 +66,18 @@ sagyohyo_sheet = "作業表"
        Set nippo_syukei_cell = nippo_syukei_cell.Offset(1, 0)
     Loop
 
-
 'マシン別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
     Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
     Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
    'インデックス初期化
-    i = 4
-   '実データ領域確認
-    Do Until first_cell_of_sagyohyo.Value = ""
-       i = i + 1
-       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
-    Loop
+    i = 41
+'   '実データ領域確認
+'    Do Until first_cell_of_sagyohyo.Value = ""
+'       i = i + 1
+'       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
+'    Loop
 
    'マシン別に並び替え
     Range(Cells(5, 1), Cells(i, 41)).Sort _
@@ -242,19 +235,7 @@ sagyohyo_sheet = "作業表"
              WkCom = 0
           End If
           .Offset(0, 26).Value = WkCom     '不良率
-         ' If Com2 <> 0 Then
-         '    'WkCom = Com2 / Com2 * 100
-         '    WkCom = ComWK / Com2
-         '   Else
-         '    WkCom = 0
-         ' End If
-         ' .Offset(0, 16).Value = WkCom     '稼働率
-         ' If Com25 <> 0 Then
-         '    WkCom = Com25 / (ComWK / 60)
-         '   Else
-         '    WkCom = 0
-         ' End If
-         ' .Offset(0, 17).Value = WkCom     '労働生産性
+
        End With
        Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
        BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
@@ -288,22 +269,11 @@ sagyohyo_sheet = "作業表"
        count = 0   '金型交換回数
     Loop
 
-   '位置の設定
+'位置の設定
     Range("A1").Select
-
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
 
 
 '品名別集計作業開始
-    'Application.StatusBar = "品名別集計中・・・　"
    '作業用ワークシートアクティブ化（作業表）
     Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
@@ -363,7 +333,6 @@ sagyohyo_sheet = "作業表"
 '
     BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value        '中子コード
     BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value        '中子名
-
 
    summary_by_machine = "品名別集計"
 
@@ -696,14 +665,6 @@ sagyohyo_sheet = "作業表"
     Range("A1").Select
 
 '*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
-'*********************************************************************************
 
 '品名別不良集計作業開始
     'Application.StatusBar = "品名別不良集計中・・・　"
@@ -799,21 +760,21 @@ sagyohyo_sheet = "作業表"
           .Offset(0, 12).Value = Com17     '手直不良
           '.Offset(0, 13).Value = Com24 / Com32     '廃棄不良率
           '.Offset(0, 14).Value = Com17 / Com32     '手直不良率
-'
+
           If Com18 <> 0 Then
              WkCom = Com18 / (Com18 + Com32)
             Else
              WkCom = 0
           End If
           .Offset(0, 13).Value = WkCom     '廃棄不良率
-'
+
           If Com17 <> 0 Then
              WkCom = Com17 / (Com17 + Com32)
             Else
              WkCom = 0
           End If
           .Offset(0, 14).Value = WkCom     '手直不良率
-'
+
        End With
        Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
        BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value
@@ -833,38 +794,23 @@ sagyohyo_sheet = "作業表"
        Com32 = 0   '良品数
        ComWK = 0   '計算ワーク
     Loop
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 '*********************************************************************************
 '************ここから　　　　20130313kometani追加　　　　ここから*****************
 '*********************************************************************************
-         
-'品名別ショット数集計開始
 
+'品名別ショット数集計開始
     Dim wb As Workbook
     Dim 元品番 As Object
     Dim 先品番 As Object
     Dim 生産日 As Variant
     Dim YandM As Variant
     Dim temp As Object
-    
+
     'ショット数集計ファイルを読み出し
     Set wb = Workbooks.Open(Filename:=ThisWorkbook.Path & "\..\..\ショット管理表\【吉賀】ショット数集計.xls ")
-    
+
     '集計月の算出
     Set 生産日 = ThisWorkbook.Worksheets("日報入力").Range("G5")
     If Month(生産日.Value) <> 12 Then
@@ -884,7 +830,7 @@ sagyohyo_sheet = "作業表"
             Exit Do
         End If
     Loop
-    
+
     '日報集計ファイルの「品名別集計」シートのセル色初期化(白色)
     '   ショット数書き換え後にチェック用として
     '   元品番のセル色を赤にする処理を追加したため
@@ -935,24 +881,13 @@ sagyohyo_sheet = "作業表"
         End If
         'チェック用
         元品番.Offset(0, -1).Interior.ColorIndex = 3
-        
+
 rt1:
-    
+
         Set 元品番 = 元品番.Offset(1, 0)
-        'MsgBox 元品番.Value
-        
-        
-        
-        '新規中子などへの対応
-        '
-        '
-        '
-        '
-        '
+
     Loop
 
-    
-    
     'ゼロ自動入力
     Dim NowCell As Object '現在参照中セル
 
@@ -965,9 +900,7 @@ rt1:
         End If
         Set NowCell = NowCell.Offset(1, 0)  '参照中のセルを下に１つずらす
     Loop
-    
-    
-    
+
     '平均ショット数（過去6ヶ月）更新
     Set 先品番 = wb.Worksheets("吉賀中子工場").Range("D6")
     Do Until 先品番 = ""
@@ -1007,27 +940,23 @@ rt1:
             temp2.Value = fy & "年" & fm & "月度"
         End If
     Next
-    
+
     '修正チェック
     Application.Run "【吉賀】ショット数集計.xls!修正check"
     
     Application.DisplayAlerts = False
     wb.Close (True)
     Application.DisplayAlerts = True
-    
+
 '*********************************************************************************
 '************ここまで　　　　20130313kometani追加　　　　ここまで*****************
 '*********************************************************************************
 
-
-   '位置の設定
+'位置の設定
    Range("A1").Select
    Application.ScreenUpdating = True
    MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
 End Sub
-
-
-
 
 Sub セル色初期化()
 
