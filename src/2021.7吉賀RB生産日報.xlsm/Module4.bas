@@ -7,7 +7,7 @@ Public NSU As Long 'NippouShuukeiUpdateFlug
 
 Public Sub 当月実績追加処理()
 
-Dim MBk As String, sagyohyo_sheet As String, machine_name_sheet As String, MSt3 As String
+Dim MBk As String, machine_name_sheet As String, MSt3 As String
 Dim active_workbook_name As String, nippo_nyuryoku_sheet As String, nippo_syukei_sheet As String
 Dim MCl1, MCl2, MCl3 As Object
 Dim nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object
@@ -19,8 +19,6 @@ Dim Com4, Com25, Com26, Com27 As Single
 Dim SVtime, count As Long
 Dim WkCom As Double
 Dim myBtn As Integer
-Dim myMsg As String
-Dim myTitle As String
 Dim BKcd As String
 Dim BKmn As String
 Dim GetMM As String
@@ -33,7 +31,6 @@ Application.ScreenUpdating = False
 '20100221改訂 s.tanaka
 '20130313改訂 k.kometani
 
-sagyohyo_sheet = "作業表"
 machine_name_sheet = "マシン名"
 active_workbook_name = ActiveWorkbook.Name
 nippo_syukei_sheet = "日報集計"
@@ -41,10 +38,7 @@ nippo_nyuryoku_sheet = "日報入力"
 
 
 '処理開始
-    myMsg = "当月実績追加処理を開始します"
-    myTitle = "当月実績追加処理"
-    
-    myBtn = MsgBox(myMsg, vbYesNo + vbExclamation, myTitle)
+    myBtn = MsgBox("当月実績追加処理を開始します", vbYesNo + vbExclamation, "当月実績追加処理")
      
     If myBtn = vbNo Then
        Exit Sub

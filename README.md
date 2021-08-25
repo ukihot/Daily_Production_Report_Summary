@@ -9,5 +9,5 @@
 ## 反映
 
 ```
-$ cscript vbac.wsf decombine
+$ cscript vbac.wsf combine
 ```
