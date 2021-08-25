@@ -9,7 +9,7 @@ Public Sub 当月実績追加処理()
 
 Dim MBk As String, sagyohyo_sheet As String, machine_name_sheet As String, MSt3 As String
 Dim active_workbook_name As String, nippo_nyuryoku_sheet As String, nippo_syukei_sheet As String
-Dim MCl1, MCl2, MCl3 As Object
+Dim first_cell_of_sagyohyo, first_cell_of_summary, MCl3 As Object
 Dim nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object
 Dim i As Integer, InM As Integer, Lcnt As Integer
 Dim Com1, Com2, Com3, Com5, Com6, Com7, Com8, Com9, Com10 As Long
@@ -21,7 +21,7 @@ Dim WkCom As Double
 Dim myBtn As Integer
 Dim BKcd As String
 Dim BKmn As String
-Dim GetMM As String
+Dim summary_by_machine As String
 Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
 Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
 
@@ -50,7 +50,7 @@ sagyohyo_sheet = "作業表"
     '処理開始位置の設定
     Set nippo_syukei_cell = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
     Set nippo_nyuryoku_cell = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
     '日報集計シートの更新
     Call NippouShuukei_Update(nippo_nyuryoku_cell, nippo_syukei_cell)
@@ -62,30 +62,28 @@ sagyohyo_sheet = "作業表"
     '実績データ確認
     n = 1
     Do Until nippo_syukei_cell.Value = ""
-       'Application.StatusBar = "日報集計から作業表を作成中・・・　" & n & "レコード目"
        With nippo_syukei_cell
          'データ移行
           For i = 0 To 39
-              MCl1.Offset(0, i).Value = .Offset(0, i).Value
+              first_cell_of_sagyohyo.Offset(0, i).Value = .Offset(0, i).Value
           Next i
        End With
-       Set MCl1 = MCl1.Offset(1, 0)
+       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
        Set nippo_syukei_cell = nippo_syukei_cell.Offset(1, 0)
     Loop
 
 
 'マシン別集計作業開始
-    'Application.StatusBar = "マシン別集計中・・・　"
    '作業用ワークシートアクティブ化（作業表）
     Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
    'インデックス初期化
     i = 4
    '実データ領域確認
-    Do Until MCl1.Value = ""
+    Do Until first_cell_of_sagyohyo.Value = ""
        i = i + 1
-       Set MCl1 = MCl1.Offset(1, 0)
+       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
     Loop
 
    'マシン別に並び替え
@@ -93,7 +91,7 @@ sagyohyo_sheet = "作業表"
     Key1:=Columns("B")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com1 = 0    'ショット
@@ -132,82 +130,82 @@ sagyohyo_sheet = "作業表"
     SVtime = 0  '出勤総時間
     count = 0   '金型交換回数
 '
-    BKcd = MCl1.Offset(0, 1).Value
-    BKmn = MCl1.Offset(0, 2).Value
-    SVtime = MCl1.Offset(-4, 0).Value
+    BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
+    BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
+    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value
 '
-   GetMM = "マシン別集計"
+   summary_by_machine = "マシン別集計"
 
 '追加先シート初期化
    '作業用ワークシートアクティブ化（マシン別－該当月）
-    Worksheets(GetMM).Activate
+    Worksheets(summary_by_machine).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A7")
    'インデックス初期値
     i = 7
    '実データ領域確認
-    Do Until MCl2.Value = ""
+    Do Until first_cell_of_summary.Value = ""
        i = i + 1
-       Set MCl2 = MCl2.Offset(1, 0)
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
     Loop
    'クリア範囲指定
     Range(Cells(7, 1), Cells(i, 32)).Select
     Selection.ClearContents
 
 'マシン名取り込み
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A7")
     Set MCl3 = Workbooks(active_workbook_name).Worksheets(machine_name_sheet).Range("B4")
     Do Until MCl3.Value = ""
        If MCl3.Offset(0, 1).Value <> "" Then
-          MCl2.Offset(0, 0).Value = MCl3.Offset(0, 0).Value
-          MCl2.Offset(0, 1).Value = MCl3.Offset(0, 1).Value
-          Set MCl2 = MCl2.Offset(1, 0)
+          first_cell_of_summary.Offset(0, 0).Value = MCl3.Offset(0, 0).Value
+          first_cell_of_summary.Offset(0, 1).Value = MCl3.Offset(0, 1).Value
+          Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
        End If
        Set MCl3 = MCl3.Offset(1, 0)
     Loop
 
 '実績追加処理－マシン別
    'マシン別集計
-    Do Until MCl1.Value = ""
+    Do Until first_cell_of_sagyohyo.Value = ""
        '追加先シート処理開始位置指定
-       Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
-       Do Until BKcd <> MCl1.Offset(0, 1).Value
-          Com1 = Com1 + MCl1.Offset(0, 4).Value
-          Com2 = Com2 + MCl1.Offset(0, 5).Value
-          Com3 = Com3 + MCl1.Offset(0, 6).Value
-          Com4 = Com4 + MCl1.Offset(0, 7).Value
-          Com5 = Com5 + MCl1.Offset(0, 8).Value
-          Com6 = Com6 + MCl1.Offset(0, 9).Value
-          If MCl1.Offset(0, 9).Value > 0 Then
+       Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A7")
+       Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 1).Value
+          Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
+          Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
+          Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
+          Com4 = Com4 + first_cell_of_sagyohyo.Offset(0, 7).Value
+          Com5 = Com5 + first_cell_of_sagyohyo.Offset(0, 8).Value
+          Com6 = Com6 + first_cell_of_sagyohyo.Offset(0, 9).Value
+          If first_cell_of_sagyohyo.Offset(0, 9).Value > 0 Then
              count = count + 1
           End If
-          Com7 = Com7 + MCl1.Offset(0, 10).Value
-          Com8 = Com8 + MCl1.Offset(0, 11).Value
-          Com9 = Com9 + MCl1.Offset(0, 12).Value
-          Com10 = Com10 + MCl1.Offset(0, 13).Value
-          Com11 = Com11 + MCl1.Offset(0, 14).Value
-          Com12 = Com12 + MCl1.Offset(0, 15).Value
-          Com13 = Com13 + MCl1.Offset(0, 16).Value
-          Com14 = Com14 + MCl1.Offset(0, 17).Value
-          Com15 = Com15 + MCl1.Offset(0, 18).Value
-          Com16 = Com16 + MCl1.Offset(0, 19).Value
-          Com17 = Com17 + MCl1.Offset(0, 20).Value
-          Com18 = Com18 + MCl1.Offset(0, 21).Value
-          Com32 = Com32 + MCl1.Offset(0, 30).Value
-          Com27 = Com27 + MCl1.Offset(0, 34).Value
-          Com28 = Com28 + MCl1.Offset(0, 35).Value
-          Com29 = Com29 + MCl1.Offset(0, 36).Value
-          Com30 = Com30 + MCl1.Offset(0, 37).Value
-          Com31 = Com31 + MCl1.Offset(0, 38).Value
-          Set MCl1 = MCl1.Offset(1, 0)
+          Com7 = Com7 + first_cell_of_sagyohyo.Offset(0, 10).Value
+          Com8 = Com8 + first_cell_of_sagyohyo.Offset(0, 11).Value
+          Com9 = Com9 + first_cell_of_sagyohyo.Offset(0, 12).Value
+          Com10 = Com10 + first_cell_of_sagyohyo.Offset(0, 13).Value
+          Com11 = Com11 + first_cell_of_sagyohyo.Offset(0, 14).Value
+          Com12 = Com12 + first_cell_of_sagyohyo.Offset(0, 15).Value
+          Com13 = Com13 + first_cell_of_sagyohyo.Offset(0, 16).Value
+          Com14 = Com14 + first_cell_of_sagyohyo.Offset(0, 17).Value
+          Com15 = Com15 + first_cell_of_sagyohyo.Offset(0, 18).Value
+          Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
+          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
+          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
+          Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+          Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
+          Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
+          Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
+          Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
+          Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
        Loop
       '生産時間算出
       'ComWK = Com2 - Com3 - Com4 - Com5 - Com6 - Com7 - Com8 - Com9 - Com10 - Com11 - Com12
       'マシンコード位置設定
-       Do Until BKcd = MCl2.Offset(0, 0).Value
-          Set MCl2 = MCl2.Offset(1, 0)
+       Do Until BKcd = first_cell_of_summary.Offset(0, 0).Value
+          Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
        Loop
-       With MCl2
+       With first_cell_of_summary
           .Offset(0, 2).Value = Com1           'ショット数
           .Offset(0, 3).Value = Com32          '良品数
           .Offset(0, 4).Value = Com18          '不良数
@@ -258,9 +256,9 @@ sagyohyo_sheet = "作業表"
          ' End If
          ' .Offset(0, 17).Value = WkCom     '労働生産性
        End With
-       Set MCl2 = MCl2.Offset(1, 0)
-       BKcd = MCl1.Offset(0, 1).Value
-       BKmn = MCl1.Offset(0, 2).Value
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
+       BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
+       BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
       '作業エリア初期化
        Com1 = 0    'ショット
        Com2 = 0    '稼動時間
@@ -309,15 +307,15 @@ sagyohyo_sheet = "作業表"
    '作業用ワークシートアクティブ化（作業表）
     Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    'インデックス初期化
     i = 4
 
    '実データ領域確認
-    Do Until MCl1.Value = ""
+    Do Until first_cell_of_sagyohyo.Value = ""
        i = i + 1
-       Set MCl1 = MCl1.Offset(1, 0)
+       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
     Loop
 
    '品名別に並び替え
@@ -325,7 +323,7 @@ sagyohyo_sheet = "作業表"
     Key1:=Columns("D")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com1 = 0    'ショット
@@ -363,23 +361,23 @@ sagyohyo_sheet = "作業表"
     ComWK = 0   '計算ワーク
     count = 0   '金型交換回数
 '
-    BKcd = MCl1.Offset(0, 3).Value        '中子コード
-    BKmn = MCl1.Offset(0, 39).Value        '中子名
+    BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value        '中子コード
+    BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value        '中子名
 
 
-   GetMM = "品名別集計"
+   summary_by_machine = "品名別集計"
 
 '追加先シート初期化
    '作業用ワークシートアクティブ化（マシン別－該当月）
-    Worksheets(GetMM).Activate
+    Worksheets(summary_by_machine).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A7")
    'インデックス初期値
     i = 7
    '実データ領域確認
-    Do Until MCl2.Value = ""
+    Do Until first_cell_of_summary.Value = ""
        i = i + 1
-       Set MCl2 = MCl2.Offset(1, 0)
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
     Loop
    'クリア範囲指定
     Range(Cells(7, 1), Cells(i, 32)).Select
@@ -387,44 +385,44 @@ sagyohyo_sheet = "作業表"
 '
 '実績追加処理－品名別
    '追加先シート処理開始位置指定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A7")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A7")
 
    '品名別集計
-    Do Until MCl1.Value = ""
-       Do Until BKcd <> MCl1.Offset(0, 3).Value
-          Com1 = Com1 + MCl1.Offset(0, 4).Value
-          Com2 = Com2 + MCl1.Offset(0, 5).Value
-          Com3 = Com3 + MCl1.Offset(0, 6).Value
-          Com4 = Com4 + MCl1.Offset(0, 7).Value
-          Com5 = Com5 + MCl1.Offset(0, 8).Value
-          Com6 = Com6 + MCl1.Offset(0, 9).Value
-          If MCl1.Offset(0, 9).Value > 0 Then
+    Do Until first_cell_of_sagyohyo.Value = ""
+       Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 3).Value
+          Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
+          Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
+          Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
+          Com4 = Com4 + first_cell_of_sagyohyo.Offset(0, 7).Value
+          Com5 = Com5 + first_cell_of_sagyohyo.Offset(0, 8).Value
+          Com6 = Com6 + first_cell_of_sagyohyo.Offset(0, 9).Value
+          If first_cell_of_sagyohyo.Offset(0, 9).Value > 0 Then
              count = count + 1
           End If
-          Com7 = Com7 + MCl1.Offset(0, 10).Value
-          Com8 = Com8 + MCl1.Offset(0, 11).Value
-          Com9 = Com9 + MCl1.Offset(0, 12).Value
-          Com10 = Com10 + MCl1.Offset(0, 13).Value
-          Com11 = Com11 + MCl1.Offset(0, 14).Value
-          Com12 = Com12 + MCl1.Offset(0, 15).Value
-          Com13 = Com13 + MCl1.Offset(0, 16).Value
-          Com14 = Com14 + MCl1.Offset(0, 17).Value
-          Com15 = Com15 + MCl1.Offset(0, 18).Value
-          Com16 = Com16 + MCl1.Offset(0, 19).Value
-          Com17 = Com17 + MCl1.Offset(0, 20).Value
-          Com18 = Com18 + MCl1.Offset(0, 21).Value
-          Com32 = Com32 + MCl1.Offset(0, 30).Value
-          Com27 = Com27 + MCl1.Offset(0, 34).Value
-          Com28 = Com28 + MCl1.Offset(0, 35).Value
-          Com29 = Com29 + MCl1.Offset(0, 36).Value
-          Com30 = Com30 + MCl1.Offset(0, 37).Value
-          Com31 = Com31 + MCl1.Offset(0, 38).Value
-          Set MCl1 = MCl1.Offset(1, 0)
+          Com7 = Com7 + first_cell_of_sagyohyo.Offset(0, 10).Value
+          Com8 = Com8 + first_cell_of_sagyohyo.Offset(0, 11).Value
+          Com9 = Com9 + first_cell_of_sagyohyo.Offset(0, 12).Value
+          Com10 = Com10 + first_cell_of_sagyohyo.Offset(0, 13).Value
+          Com11 = Com11 + first_cell_of_sagyohyo.Offset(0, 14).Value
+          Com12 = Com12 + first_cell_of_sagyohyo.Offset(0, 15).Value
+          Com13 = Com13 + first_cell_of_sagyohyo.Offset(0, 16).Value
+          Com14 = Com14 + first_cell_of_sagyohyo.Offset(0, 17).Value
+          Com15 = Com15 + first_cell_of_sagyohyo.Offset(0, 18).Value
+          Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
+          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
+          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
+          Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+          Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
+          Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
+          Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
+          Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
+          Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
        Loop
       '生産時間算出
       'ComWK = Com2 - Com3 - Com4 - Com5 - Com6 - Com7 - Com8 - Com9 - Com10 - Com11 - Com12
       '
-      With MCl2  '20140408kometani  中子コードを記入するセルを追加したことで右に1個ずつずらした
+      With first_cell_of_summary  '20140408kometani  中子コードを記入するセルを追加したことで右に1個ずつずらした
           .Offset(0, 1).Value = BKmn           '中子名
           .Offset(0, 2).Value = BKcd           '中子コード　'20140408kometani　追加
           .Offset(0, 3).Value = Com1           'ショット数
@@ -479,9 +477,9 @@ sagyohyo_sheet = "作業表"
           'End If
           '.Offset(0, 20).Value = WkCom     '労働生産性
        End With
-       Set MCl2 = MCl2.Offset(1, 0)
-       BKcd = MCl1.Offset(0, 3).Value
-       BKmn = MCl1.Offset(0, 39).Value
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
+       BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value
+       BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value
 
    '作業エリア初期化
        Com1 = 0    'ショット
@@ -513,18 +511,18 @@ sagyohyo_sheet = "作業表"
     Loop
 
    '作業用ワークシートアクティブ化（品名別－該当月）
-    Worksheets(GetMM).Activate
+    Worksheets(summary_by_machine).Activate
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("B7")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("B7")
 
    'インデックス初期化
     i = 7
 
    '実データ領域確認
-    Do Until MCl1.Value = ""
+    Do Until first_cell_of_sagyohyo.Value = ""
        i = i + 1
-       Set MCl1 = MCl1.Offset(1, 0)
+       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
     Loop
 
    '生産金額順（降順）に並び替え
@@ -532,14 +530,14 @@ sagyohyo_sheet = "作業表"
     Key1:=Columns("Z"), Order1:=xlDescending
 
 '品名に通番付与（生産金額順）
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("B7")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("B7")
    'カウント初期化
     Lcnt = 1
    '実行
-    Do Until MCl2.Value = ""
-       MCl2.Offset(0, -1).Value = Lcnt   '通番
+    Do Until first_cell_of_summary.Value = ""
+       first_cell_of_summary.Offset(0, -1).Value = Lcnt   '通番
        Lcnt = Lcnt + 1
-       Set MCl2 = MCl2.Offset(1, 0)
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
     Loop
 
 '*********************************************************************************
@@ -558,13 +556,13 @@ sagyohyo_sheet = "作業表"
    '作業用ワークシートアクティブ化（作業表）
     Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
    'インデックス初期化
     i = 4
    '実データ領域確認
-    Do Until MCl1.Value = ""
+    Do Until first_cell_of_sagyohyo.Value = ""
        i = i + 1
-       Set MCl1 = MCl1.Offset(1, 0)
+       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
     Loop
 
    'マシン別に並び替え
@@ -572,7 +570,7 @@ sagyohyo_sheet = "作業表"
     Key1:=Columns("B")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com17 = 0   '手直不良（良品に含まれる）
@@ -587,64 +585,64 @@ sagyohyo_sheet = "作業表"
     Com26 = 0   'その他
     Com32 = 0   '良品数
     ComWK = 0   '計算ワーク
-    BKcd = MCl1.Offset(0, 1).Value
-    BKmn = MCl1.Offset(0, 2).Value
+    BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
+    BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
 
-   GetMM = "不良集計【マシン】"
+   summary_by_machine = "不良集計【マシン】"
 
 '追加先シート初期化
    '作業用ワークシートアクティブ化
-    Worksheets(GetMM).Activate
+    Worksheets(summary_by_machine).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A6")
    'インデックス初期値
     i = 5
    '実データ領域確認
-    Do Until MCl2.Value = ""
+    Do Until first_cell_of_summary.Value = ""
        i = i + 1
-       Set MCl2 = MCl2.Offset(1, 0)
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
     Loop
    'クリア範囲指定
     Range(Cells(6, 1), Cells(i, 15)).Select
     Selection.ClearContents
 
 'マシン名取り込み
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A6")
     Set MCl3 = Workbooks(active_workbook_name).Worksheets(machine_name_sheet).Range("B4")
     Do Until MCl3.Value = ""
        If MCl3.Offset(0, 1).Value <> "" Then
-          MCl2.Offset(0, 0).Value = MCl3.Offset(0, 0).Value
-          MCl2.Offset(0, 1).Value = MCl3.Offset(0, 1).Value
-          Set MCl2 = MCl2.Offset(1, 0)
+          first_cell_of_summary.Offset(0, 0).Value = MCl3.Offset(0, 0).Value
+          first_cell_of_summary.Offset(0, 1).Value = MCl3.Offset(0, 1).Value
+          Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
        End If
        Set MCl3 = MCl3.Offset(1, 0)
     Loop
 
 '実績追加処理－マシン別
    '追加先シート処理開始位置指定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A6")
 
    'マシン別集計
-    Do Until MCl1.Value = ""
-       Do Until BKcd <> MCl1.Offset(0, 1).Value
-          Com17 = Com17 + MCl1.Offset(0, 20).Value
-          Com18 = Com18 + MCl1.Offset(0, 21).Value
-          Com19 = Com19 + MCl1.Offset(0, 22).Value
-          Com20 = Com20 + MCl1.Offset(0, 23).Value
-          Com21 = Com21 + MCl1.Offset(0, 24).Value
-          Com22 = Com22 + MCl1.Offset(0, 25).Value
-          Com23 = Com23 + MCl1.Offset(0, 26).Value
-          Com24 = Com24 + MCl1.Offset(0, 27).Value
-          Com25 = Com25 + MCl1.Offset(0, 28).Value
-          Com26 = Com26 + MCl1.Offset(0, 29).Value
-          Com32 = Com32 + MCl1.Offset(0, 30).Value
-          Set MCl1 = MCl1.Offset(1, 0)
+    Do Until first_cell_of_sagyohyo.Value = ""
+       Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 1).Value
+          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
+          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
+          Com19 = Com19 + first_cell_of_sagyohyo.Offset(0, 22).Value
+          Com20 = Com20 + first_cell_of_sagyohyo.Offset(0, 23).Value
+          Com21 = Com21 + first_cell_of_sagyohyo.Offset(0, 24).Value
+          Com22 = Com22 + first_cell_of_sagyohyo.Offset(0, 25).Value
+          Com23 = Com23 + first_cell_of_sagyohyo.Offset(0, 26).Value
+          Com24 = Com24 + first_cell_of_sagyohyo.Offset(0, 27).Value
+          Com25 = Com25 + first_cell_of_sagyohyo.Offset(0, 28).Value
+          Com26 = Com26 + first_cell_of_sagyohyo.Offset(0, 29).Value
+          Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
        Loop
       'マシンコード位置設定
-       Do Until BKcd = MCl2.Offset(0, 0).Value
-          Set MCl2 = MCl2.Offset(1, 0)
+       Do Until BKcd = first_cell_of_summary.Offset(0, 0).Value
+          Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
        Loop
-       With MCl2
+       With first_cell_of_summary
 '         .Offset(0, 0).Value = BKcd       'マシンコード
 '         .Offset(0, 1).Value = BKmn       'マシン名
           .Offset(0, 2).Value = Com32      '良品数
@@ -676,9 +674,9 @@ sagyohyo_sheet = "作業表"
           .Offset(0, 14).Value = WkCom     '手直不良率
 '
        End With
-       Set MCl2 = MCl2.Offset(1, 0)
-       BKcd = MCl1.Offset(0, 1).Value
-       BKmn = MCl1.Offset(0, 2).Value
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
+       BKcd = first_cell_of_sagyohyo.Offset(0, 1).Value
+       BKmn = first_cell_of_sagyohyo.Offset(0, 2).Value
       '作業エリア初期化
        Com17 = 0   '手直不良（良品に含まれる）
        Com18 = 0   '廃棄不良
@@ -712,15 +710,15 @@ sagyohyo_sheet = "作業表"
    '作業用ワークシートアクティブ化（作業表）
     Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    'インデックス初期化
     i = 4
 
    '実データ領域確認
-    Do Until MCl1.Value = ""
+    Do Until first_cell_of_sagyohyo.Value = ""
        i = i + 1
-       Set MCl1 = MCl1.Offset(1, 0)
+       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
     Loop
 
    '品名別に並び替え
@@ -728,7 +726,7 @@ sagyohyo_sheet = "作業表"
     Key1:=Columns("D")
 
    '処理開始位置の設定
-    Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
+    Set first_cell_of_sagyohyo = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
 
    '作業領域初期化
     Com17 = 0   '手直不良（良品に含まれる）
@@ -743,22 +741,22 @@ sagyohyo_sheet = "作業表"
     Com26 = 0   'その他
     Com32 = 0   '良品数
     ComWK = 0   '計算ワーク
-    BKcd = MCl1.Offset(0, 3).Value        '中子コード
-    BKmn = MCl1.Offset(0, 39).Value        '中子名
+    BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value        '中子コード
+    BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value        '中子名
 
-   GetMM = "不良集計【品名】"
+   summary_by_machine = "不良集計【品名】"
 
 '追加先シート初期化
    '作業用ワークシートアクティブ化（品名別－該当月）
-    Worksheets(GetMM).Activate
+    Worksheets(summary_by_machine).Activate
    '処理開始位置の設定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A6")
    'インデックス初期値
     i = 5
    '実データ領域確認
-    Do Until MCl2.Value = ""
+    Do Until first_cell_of_summary.Value = ""
        i = i + 1
-       Set MCl2 = MCl2.Offset(1, 0)
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
     Loop
 
    'クリア範囲指定
@@ -767,25 +765,25 @@ sagyohyo_sheet = "作業表"
 
 '実績追加処理－品名別
    '追加先シート処理開始位置指定
-    Set MCl2 = Workbooks(active_workbook_name).Worksheets(GetMM).Range("A6")
+    Set first_cell_of_summary = Workbooks(active_workbook_name).Worksheets(summary_by_machine).Range("A6")
 
    '品名別集計
-    Do Until MCl1.Value = ""
-       Do Until BKcd <> MCl1.Offset(0, 3).Value
-          Com17 = Com17 + MCl1.Offset(0, 20).Value
-          Com18 = Com18 + MCl1.Offset(0, 21).Value
-          Com19 = Com19 + MCl1.Offset(0, 22).Value
-          Com20 = Com20 + MCl1.Offset(0, 23).Value
-          Com21 = Com21 + MCl1.Offset(0, 24).Value
-          Com22 = Com22 + MCl1.Offset(0, 25).Value
-          Com23 = Com23 + MCl1.Offset(0, 26).Value
-          Com24 = Com24 + MCl1.Offset(0, 27).Value
-          Com25 = Com25 + MCl1.Offset(0, 28).Value
-          Com26 = Com26 + MCl1.Offset(0, 29).Value
-          Com32 = Com32 + MCl1.Offset(0, 30).Value
-          Set MCl1 = MCl1.Offset(1, 0)
+    Do Until first_cell_of_sagyohyo.Value = ""
+       Do Until BKcd <> first_cell_of_sagyohyo.Offset(0, 3).Value
+          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
+          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
+          Com19 = Com19 + first_cell_of_sagyohyo.Offset(0, 22).Value
+          Com20 = Com20 + first_cell_of_sagyohyo.Offset(0, 23).Value
+          Com21 = Com21 + first_cell_of_sagyohyo.Offset(0, 24).Value
+          Com22 = Com22 + first_cell_of_sagyohyo.Offset(0, 25).Value
+          Com23 = Com23 + first_cell_of_sagyohyo.Offset(0, 26).Value
+          Com24 = Com24 + first_cell_of_sagyohyo.Offset(0, 27).Value
+          Com25 = Com25 + first_cell_of_sagyohyo.Offset(0, 28).Value
+          Com26 = Com26 + first_cell_of_sagyohyo.Offset(0, 29).Value
+          Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
        Loop
-       With MCl2
+       With first_cell_of_summary
           .Offset(0, 0).Value = BKcd       '中子コード
           .Offset(0, 1).Value = BKmn       '中子名
           .Offset(0, 2).Value = Com32      '良品数
@@ -817,9 +815,9 @@ sagyohyo_sheet = "作業表"
           .Offset(0, 14).Value = WkCom     '手直不良率
 '
        End With
-       Set MCl2 = MCl2.Offset(1, 0)
-       BKcd = MCl1.Offset(0, 3).Value
-       BKmn = MCl1.Offset(0, 39).Value
+       Set first_cell_of_summary = first_cell_of_summary.Offset(1, 0)
+       BKcd = first_cell_of_sagyohyo.Offset(0, 3).Value
+       BKmn = first_cell_of_sagyohyo.Offset(0, 39).Value
 
    '作業エリア初期化
        Com17 = 0   '手直不良（良品に含まれる）
@@ -981,9 +979,7 @@ rt1:
         End If
         Set 先品番 = 先品番.Offset(1, 0)
     Loop
-    
-    
-    
+
     '先６ヶ月分の列追加
     Dim fy, fm, s, t As Integer
     Dim temp2 As Object
@@ -1024,18 +1020,10 @@ rt1:
 '*********************************************************************************
 
 
-
-
-
-
-
-
    '位置の設定
-    Range("A1").Select
-    
-    'Application.StatusBar = False
-    Application.ScreenUpdating = True
-    MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
+   Range("A1").Select
+   Application.ScreenUpdating = True
+   MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
 End Sub
 
 
@@ -1043,19 +1031,6 @@ End Sub
 
 Sub セル色初期化()
 
-    ThisWorkbook.Worksheets("品名別集計").Range("B7:B41").Interior.ColorIndex = 2
+   ThisWorkbook.Worksheets("品名別集計").Range("B7:B41").Interior.ColorIndex = 2
 
 End Sub
-
-
-
-
-
-
-
-
-
-
-
-
-
