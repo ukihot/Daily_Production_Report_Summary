@@ -7,7 +7,7 @@ Public NSU As Long 'NippouShuukeiUpdateFlug
 
 Public Sub 当月実績追加処理()
 
-Dim MBk As String, machine_name_sheet As String, MSt3 As String
+Dim MBk As String, sagyohyo_sheet As String, machine_name_sheet As String, MSt3 As String
 Dim active_workbook_name As String, nippo_nyuryoku_sheet As String, nippo_syukei_sheet As String
 Dim MCl1, MCl2, MCl3 As Object
 Dim nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object
@@ -28,33 +28,30 @@ Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
 '初期設定
 Application.ScreenUpdating = False
 
-'20100221改訂 s.tanaka
-'20130313改訂 k.kometani
-
 machine_name_sheet = "マシン名"
 active_workbook_name = ActiveWorkbook.Name
 nippo_syukei_sheet = "日報集計"
 nippo_nyuryoku_sheet = "日報入力"
-
+sagyohyo_sheet = "作業表"
 
 '処理開始
     myBtn = MsgBox("当月実績追加処理を開始します", vbYesNo + vbExclamation, "当月実績追加処理")
-     
+
     If myBtn = vbNo Then
        Exit Sub
     End If
-   
+
     '作業領域クリア（作業表）
     Worksheets(sagyohyo_sheet).Activate
     Range("A5:AM2000").Select
     Selection.ClearContents
     Range("A5").Select
-    
+
     '処理開始位置の設定
     Set nippo_syukei_cell = Workbooks(active_workbook_name).Worksheets(nippo_syukei_sheet).Range("A5")
     Set nippo_nyuryoku_cell = Workbooks(active_workbook_name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
     Set MCl1 = Workbooks(active_workbook_name).Worksheets(sagyohyo_sheet).Range("A5")
-    
+
     '日報集計シートの更新
     Call NippouShuukei_Update(nippo_nyuryoku_cell, nippo_syukei_cell)
 

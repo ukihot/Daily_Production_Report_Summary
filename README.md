@@ -11,3 +11,8 @@
 ```
 $ cscript vbac.wsf combine
 ```
+
+# 改訂履歴
+
+* 20100221改訂 s.tanaka
+* 20130313改訂 k.kometani
