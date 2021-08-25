@@ -1,6 +1,6 @@
 Attribute VB_Name = "Module2"
 
-Public Sub NippouShuukei_Update(nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object)
+Public Sub NippouShuukei_Update(Byval nippo_nyuryoku_cell As Object, Byval nippo_syukei_cell As Object)
     'ƒZƒ‹‰Šú‰»
     ThisWorkbook.Worksheets("“ú•ñWŒv").Range("A5:AN600").ClearContents
     Range("A5").Select
