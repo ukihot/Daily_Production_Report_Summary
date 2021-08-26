@@ -768,6 +768,7 @@ Public Sub 当月実績追加処理()
    Dim temp As Object
 
    'ショット数集計ファイルを読み出し
+   'Set wb = Workbooks.Open(Filename:=ThisWorkbook.Path & "\..\..\ショット管理表\【吉賀】ショット数集計.xls ")
    Set wb = Workbooks.Open(Filename:=ThisWorkbook.Path & "\ショット管理表\【吉賀】ショット数集計.xls ")
    '集計月の算出
    Set 生産日 = ThisWorkbook.Worksheets("日報入力").Range("G5")
