@@ -3,9 +3,9 @@ Attribute VB_Name = "Module4"
 
 Public Sub 当月実績追加処理()
 
-   Dim sagyohyo_sheet As String, machine_name_sheet As String
+   Dim sagyohyo_sheet As String, mst_machine As String
    Dim nippo_nyuryoku_sheet As String, nippo_syukei_sheet As String
-   Dim first_cell_of_sagyohyo, first_cell_of_merchandise_summary, first_cell_of_machine_summary As Object
+   Dim first_cell_of_sagyohyo, first_cell_of_target_summary, first_cell_of_machine As Object
    Dim nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object
    Dim i As Integer, InM As Integer, Lcnt As Integer
    Dim Com1, Com2, Com3, Com5, Com6, Com7, Com8, Com9, Com10 As Long
@@ -17,14 +17,14 @@ Public Sub 当月実績追加処理()
    Dim myBtn As Integer
    Dim machine_code As String
    Dim nakago_name As String, nakago_code As String
-   Dim target_sheet As String
+   Dim update_target As String
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
 
    '初期設定
    Application.ScreenUpdating = False
 
-   machine_name_sheet = "マシン名"
+   mst_machine = "マシン名"
    nippo_syukei_sheet = "日報集計"
    nippo_nyuryoku_sheet = "日報入力"
    sagyohyo_sheet = "作業表"
@@ -124,41 +124,41 @@ Public Sub 当月実績追加処理()
 
    'マシンコード抽出
    machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
-   target_sheet = "マシン別集計"
+   update_target = "マシン別集計"
 
    '追加先シート初期化
    '作業用ワークシートアクティブ化（マシン別－該当月）
-   Worksheets(target_sheet).Activate
+   Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A7")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    'インデックス初期値
    i = 7
    '実データ領域確認
-   Do Until first_cell_of_merchandise_summary.Value = ""
+   Do Until first_cell_of_target_summary.Value = ""
       i = i + 1
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
    'クリア範囲指定
    Range(Cells(7, 1), Cells(i, 32)).Select
    Selection.ClearContents
 
    'マシン名取り込み
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A7")
-   Set first_cell_of_machine_summary = Workbooks(ActiveWorkbook.Name).Worksheets(machine_name_sheet).Range("B4")
-   Do Until first_cell_of_machine_summary.Value = ""
-      If first_cell_of_machine_summary.Offset(0, 1).Value <> "" Then
-         first_cell_of_merchandise_summary.Offset(0, 0).Value = first_cell_of_machine_summary.Offset(0, 0).Value
-         first_cell_of_merchandise_summary.Offset(0, 1).Value = first_cell_of_machine_summary.Offset(0, 1).Value
-         Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
+   Set first_cell_of_machine = Workbooks(ActiveWorkbook.Name).Worksheets(mst_machine).Range("B4")
+   Do Until first_cell_of_machine.Value = ""
+      If first_cell_of_machine.Offset(0, 1).Value <> "" Then
+         first_cell_of_target_summary.Offset(0, 0).Value = first_cell_of_machine.Offset(0, 0).Value
+         first_cell_of_target_summary.Offset(0, 1).Value = first_cell_of_machine.Offset(0, 1).Value
+         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       End If
-      Set first_cell_of_machine_summary = first_cell_of_machine_summary.Offset(1, 0)
+      Set first_cell_of_machine = first_cell_of_machine.Offset(1, 0)
    Loop
 
    '実績追加処理－マシン別
    'マシン別集計
    Do Until first_cell_of_sagyohyo.Value = ""
       '追加先シート処理開始位置指定
-      Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A7")
+      Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
       Do Until machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
          Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
          Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
@@ -191,11 +191,11 @@ Public Sub 当月実績追加処理()
       Loop
 
       'マシンコード位置設定
-      Do Until machine_code = first_cell_of_merchandise_summary.Offset(0, 0).Value
-         Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Do Until machine_code = first_cell_of_target_summary.Offset(0, 0).Value
+         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       Loop
 
-      With first_cell_of_merchandise_summary
+      With first_cell_of_target_summary
          .Offset(0, 2).Value = Com1      'ショット数
          .Offset(0, 3).Value = Com32     '良品数
          .Offset(0, 4).Value = Com18     '不良数
@@ -233,7 +233,7 @@ Public Sub 当月実績追加処理()
          .Offset(0, 26).Value = WkCom    '不良率
       End With
 
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
       '作業エリア初期化
       Com1 = 0   'ショット
@@ -329,19 +329,19 @@ Public Sub 当月実績追加処理()
    nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value      '中子コード
    nakago_name = first_cell_of_sagyohyo.Offset(0, 39).Value      '中子名
 
-   target_sheet = "品名別集計"
+   update_target = "品名別集計"
 
    '追加先シート初期化
    '作業用ワークシートアクティブ化（マシン別－該当月）
-   Worksheets(target_sheet).Activate
+   Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A7")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    'インデックス初期値
    i = 7
    '実データ領域確認
-   Do Until first_cell_of_merchandise_summary.Value = ""
+   Do Until first_cell_of_target_summary.Value = ""
       i = i + 1
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
    'クリア範囲指定
    Range(Cells(7, 1), Cells(i, 32)).Select
@@ -349,7 +349,7 @@ Public Sub 当月実績追加処理()
 
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A7")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    '品名別集計
    Do Until first_cell_of_sagyohyo.Value = ""
       Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
@@ -383,7 +383,7 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
 
-      With first_cell_of_merchandise_summary  '20140408kometani  中子コードを記入するセルを追加したことで右に1個ずつずらした
+      With first_cell_of_target_summary  '20140408kometani  中子コードを記入するセルを追加したことで右に1個ずつずらした
          .Offset(0, 1).Value = nakago_name      '中子名
          .Offset(0, 2).Value = nakago_code      '中子コード　'20140408kometani　追加
          .Offset(0, 3).Value = Com1      'ショット数
@@ -433,7 +433,7 @@ Public Sub 当月実績追加処理()
          End If
       End With
 
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
       nakago_name = first_cell_of_sagyohyo.Offset(0, 39).Value
 
@@ -467,10 +467,10 @@ Public Sub 当月実績追加処理()
    Loop
 
    '作業用ワークシートアクティブ化（品名別－該当月）
-   Worksheets(target_sheet).Activate
+   Worksheets(update_target).Activate
 
    '処理開始位置の設定
-   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("B7")
+   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
 
    'インデックス初期化
    i = 7
@@ -486,14 +486,14 @@ Public Sub 当月実績追加処理()
    Key1:=Columns("Z"), Order1:=xlDescending
 
    '品名に通番付与（生産金額順）
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("B7")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
    'カウント初期化
    Lcnt = 1
    '実行
-   Do Until first_cell_of_merchandise_summary.Value = ""
-      first_cell_of_merchandise_summary.Offset(0, -1).Value = Lcnt   '通番
+   Do Until first_cell_of_target_summary.Value = ""
+      first_cell_of_target_summary.Offset(0, -1).Value = Lcnt   '通番
       Lcnt = Lcnt + 1
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
 
    '20091120追加不良別集計
@@ -531,39 +531,39 @@ Public Sub 当月実績追加処理()
    Com32 = 0   '良品数
    ComWK = 0   '計算ワーク
 
-   target_sheet = "不良集計【マシン】"
+   update_target = "不良集計【マシン】"
 
    '追加先シート初期化
    '作業用ワークシートアクティブ化
-   Worksheets(target_sheet).Activate
+   Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A6")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A6")
    'インデックス初期値
    i = 5
    '実データ領域確認
-   Do Until first_cell_of_merchandise_summary.Value = ""
+   Do Until first_cell_of_target_summary.Value = ""
       i = i + 1
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
    'クリア範囲指定
    Range(Cells(6, 1), Cells(i, 15)).Select
    Selection.ClearContents
 
    'マシン名取り込み
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A6")
-   Set first_cell_of_machine_summary = Workbooks(ActiveWorkbook.Name).Worksheets(machine_name_sheet).Range("B4")
-   Do Until first_cell_of_machine_summary.Value = ""
-      If first_cell_of_machine_summary.Offset(0, 1).Value <> "" Then
-         first_cell_of_merchandise_summary.Offset(0, 0).Value = first_cell_of_machine_summary.Offset(0, 0).Value
-         first_cell_of_merchandise_summary.Offset(0, 1).Value = first_cell_of_machine_summary.Offset(0, 1).Value
-         Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A6")
+   Set first_cell_of_machine = Workbooks(ActiveWorkbook.Name).Worksheets(mst_machine).Range("B4")
+   Do Until first_cell_of_machine.Value = ""
+      If first_cell_of_machine.Offset(0, 1).Value <> "" Then
+         first_cell_of_target_summary.Offset(0, 0).Value = first_cell_of_machine.Offset(0, 0).Value
+         first_cell_of_target_summary.Offset(0, 1).Value = first_cell_of_machine.Offset(0, 1).Value
+         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       End If
-      Set first_cell_of_machine_summary = first_cell_of_machine_summary.Offset(1, 0)
+      Set first_cell_of_machine = first_cell_of_machine.Offset(1, 0)
    Loop
 
    '実績追加処理－マシン別
    '追加先シート処理開始位置指定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A6")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A6")
 
    machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
    'マシン別集計
@@ -584,11 +584,11 @@ Public Sub 当月実績追加処理()
 
       Loop
       'マシンコード位置設定
-      Do Until machine_code = first_cell_of_merchandise_summary.Offset(0, 0).Value
-         Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Do Until machine_code = first_cell_of_target_summary.Offset(0, 0).Value
+         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
 
       Loop
-      With first_cell_of_merchandise_summary
+      With first_cell_of_target_summary
          .Offset(0, 2).Value = Com32     '良品数
          .Offset(0, 3).Value = Com18     '不良数
          .Offset(0, 4).Value = Com19     'ボス割れ表
@@ -615,7 +615,7 @@ Public Sub 当月実績追加処理()
          .Offset(0, 14).Value = WkCom    '手直不良率
 
       End With
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
       '作業エリア初期化
       Com17 = 0   '手直不良（良品に含まれる）
@@ -673,16 +673,16 @@ Public Sub 当月実績追加処理()
 
    '追加先シート初期化
    '作業用ワークシートアクティブ化（品名別－該当月）
-   target_sheet = "不良集計【品名】"
-   Worksheets(target_sheet).Activate
+   update_target = "不良集計【品名】"
+   Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A6")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A6")
    'インデックス初期値
    i = 5
    '実データ領域確認
-   Do Until first_cell_of_merchandise_summary.Value = ""
+   Do Until first_cell_of_target_summary.Value = ""
       i = i + 1
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
 
    'クリア範囲指定
@@ -691,7 +691,7 @@ Public Sub 当月実績追加処理()
 
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
-   Set first_cell_of_merchandise_summary = Workbooks(ActiveWorkbook.Name).Worksheets(target_sheet).Range("A6")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A6")
 
    '品名別集計
    Do Until first_cell_of_sagyohyo.Value = ""
@@ -712,7 +712,7 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
       Debug.Print test
-      With first_cell_of_merchandise_summary
+      With first_cell_of_target_summary
          .Offset(0, 0).Value = nakago_code      '中子コード
          .Offset(0, 1).Value = nakago_name      '中子名
          .Offset(0, 2).Value = Com32     '良品数
@@ -739,7 +739,7 @@ Public Sub 当月実績追加処理()
          End If
          .Offset(0, 14).Value = WkCom    '手直不良率
       End With
-      Set first_cell_of_merchandise_summary = first_cell_of_merchandise_summary.Offset(1, 0)
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    '作業エリア初期化
       Com17 = 0   '手直不良（良品に含まれる）
       Com18 = 0   '廃棄不良
