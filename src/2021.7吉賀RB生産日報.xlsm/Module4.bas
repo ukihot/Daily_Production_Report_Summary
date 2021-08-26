@@ -220,7 +220,6 @@ Public Sub 当月実績追加処理()
          .Offset(0, 23).Value = Com29 / 1000  '不良使用量
          .Offset(0, 24).Value = Com30 / 1000  '生産金額
          .Offset(0, 25).Value = Com31 / 1000  '不良金額
-         '.Offset(0, 26).Value = Com18 / Com32 * 100  '不良率
          .Offset(0, 27).Value = (Com2 / 60) / SVtime '設備負荷率
          .Offset(0, 28).Value = Com3 / Com2   '設備稼働率
          .Offset(0, 29).Value = Com30 / (Com2 / 60)  '労働生産性（マシン）
@@ -266,7 +265,6 @@ Public Sub 当月実績追加処理()
 
    '位置の設定
    Range("A1").Select
-
 
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
