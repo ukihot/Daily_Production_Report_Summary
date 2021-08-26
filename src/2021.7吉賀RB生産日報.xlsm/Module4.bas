@@ -78,9 +78,20 @@ Public Sub 当月実績追加処理()
       i = i + 1
       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
    Loop
-   'マシン別に並び替え
-   Range(Cells(5, 1), Cells(i, 41)).Sort _
-   Key1:=Columns("B")
+   'マシン順と中子順と複数条件でソート
+   With ActiveSheet
+      .Sort.SortFields.Clear
+      'マシン順
+      .Sort.SortFields.Add _
+         Key:=ActiveSheet.Range("B5")
+      '中子順
+      .Sort.SortFields.Add _
+         Key:=ActiveSheet.Range("D5")
+      With .Sort
+         .SetRange Range(Cells(5, 1), Cells(i, 41))
+         .Apply
+      End With
+   End With
 
    '処理開始位置の設定
    Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(sagyohyo_sheet).Range("A5")
@@ -127,6 +138,7 @@ Public Sub 当月実績追加処理()
    update_target = "マシン別集計"
 
    '追加先シート初期化
+   'TODO: 中子別で出力する
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
@@ -263,6 +275,8 @@ Public Sub 当月実績追加処理()
       count = 0   '金型交換回数
    Loop
 
+   'SKIP: Test
+   Call TotsuzenoOwari()
    '位置の設定
    Range("A1").Select
 
@@ -753,8 +767,7 @@ Public Sub 当月実績追加処理()
       ComWK = 0   '計算ワーク
    Loop
    'SKIP: Test
-   MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
-   Exit Sub
+   Call TotsuzenoOwari()
    '品名別ショット数集計開始
    Dim wb As Workbook
    Dim 元品番 As Object
@@ -903,4 +916,9 @@ End Sub
 
 Sub セル色初期化()
    ThisWorkbook.Worksheets("品名別集計").Range("B7:B41").Interior.ColorIndex = 2
+End Sub
+
+Sub TotsuzenoOwari()
+   MsgBox "処理をやめました。", vbOKOnly + vbInformation, "通知"
+   End
 End Sub
