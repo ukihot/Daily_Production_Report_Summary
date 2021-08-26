@@ -122,12 +122,8 @@ Public Sub 当月実績追加処理()
    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value  '出勤総時間
    count = 0   '金型交換回数
 
-   Dim daily_report_item(35) As Integer
-   Erase daily_report_item
-
    'マシンコード抽出
    machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
-
    target_sheet = "マシン別集計"
 
    '追加先シート初期化
@@ -758,7 +754,9 @@ Public Sub 当月実績追加処理()
       Com32 = 0   '良品数
       ComWK = 0   '計算ワーク
    Loop
-
+   'SKIP: Test
+   MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
+   Exit Sub
    '品名別ショット数集計開始
    Dim wb As Workbook
    Dim 元品番 As Object
