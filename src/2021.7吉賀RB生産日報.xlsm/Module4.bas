@@ -171,8 +171,6 @@ Public Sub 当月実績追加処理()
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nakago_by_machine As Object
       Set nakago_by_machine = CreateObject("Scripting.Dictionary")
-      '追加先シート処理開始位置指定
-      Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
       'A.ループ条件：マシンコードが変わるまで。
       Do Until machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
          Dim nippo_by_nakago As Object
@@ -191,7 +189,7 @@ Public Sub 当月実績追加処理()
          'B.ループ条件：中子コードが変わるまで。
          Do Until nakago_code <> first_cell_of_sagyohyo.Offset(3, 0).Value
             Dim j As Integer
-            j=0
+            k = 0
             '（マシンコードの中で）初めての中子コードだったとき新登録
             If nippo_by_nakago.Exists(nakago_code) = False Then
                Dim nippo(23) As Integer
@@ -199,12 +197,13 @@ Public Sub 当月実績追加処理()
                nippo_by_nakago.Add nakago_code,nippo
             End If
             For Each i In read_index
-               nippo_by_nakago.Item(nakago_code)(j) = nippo_by_nakago.Item(nakago_code)(j) + first_cell_of_sagyohyo.Offset(0, i)
+               nippo_by_nakago.Item(nakago_code)(k) = nippo_by_nakago.Item(nakago_code)(k) + first_cell_of_sagyohyo.Offset(0, i)
                If i = 9 Then
                   If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
                      count = count + 1
                   End If
                End If
+               k = k + 1
             Next i
             '1行読み終わったら次行へ
             Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
@@ -215,6 +214,8 @@ Public Sub 当月実績追加処理()
          '配列を使用する
       Loop
 
+      '追加先シート処理開始位置指定
+      Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
       'マシンコード位置設定
       Do Until machine_code = first_cell_of_target_summary.Offset(0, 0).Value
          Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
