@@ -167,20 +167,33 @@ Public Sub 当月実績追加処理()
    '実績追加処理－マシン別
    'マシン別集計
    'TODO:中子別で集計する。
+   Dim read_index As Variant
+   read_index = Array(4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,30,34,35,36,37,38)
+
    Do Until first_cell_of_sagyohyo.Value = ""
       '追加先シート処理開始位置指定
       Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
 
       'マシンごとの中子別集計を格納する連想配列
-      Dim nakago_by_machine As Object
-      Set nakago_by_machine = CreateObject(“Scripting.Dictionary”)
-      'ループ条件：マシンコードが変わるまで。
+      Dim nippo_by_nakago As Object
+      Set nippo_by_nakago = CreateObject(“Scripting.Dictionary”)
+      'A.ループ条件：マシンコードが変わるまで。
       Do Until machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
-         'TODO: 辞書変数の変数名にマシンコードをつける？
          nakago_code = first_cell_of_sagyohyo.Offset(3, 0).Value
-         'ループ条件：中子コードが変わるまで。
+         'データの流れ例：
+         'マシン：4, 中子:8, 格納データ：x(24) 1行目
+         'マシン：4, 中子:8, 格納データ：x(24) 2行目
+         'マシン：4, 中子:9, 格納データ：x(24) 3行目
+         'マシン：5, 中子:2, 格納データ：x(24) 5行目
+         'Dictionary nippo_by_nakago = [中子コード][格納データ]
+         '０．Aの1ループ：辞書型nippo_by_nakagoを初期化
+         '１．Bの1ループ：nippo_by_nakagoに中子コード8と1行目の24つのデータを登録
+         '２．Bの2ループ：中子コードが同じなので「１．」のnippo_by_nakagoに加算
+         '３．Bの1ループ：中子コードが異なるので中子コード9と3行目の24つのデータを登録
+         '４．Aの1ループ：nippo_by_nakagoは配列nakago_by_machineに格納
+         'B.ループ条件：中子コードが変わるまで。
          Do Until nakago_code <> first_cell_of_sagyohyo.Offset(3, 0).Value
-            nakago_by_machine.Item(nakago_code) = nakago_by_machine.Item(nakago_code) + first_cell_of_sagyohyo.Offset(0, 4).Value
+            Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
             Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
             Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
             Com4 = Com4 + first_cell_of_sagyohyo.Offset(0, 7).Value
