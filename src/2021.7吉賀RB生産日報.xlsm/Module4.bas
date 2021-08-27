@@ -166,25 +166,22 @@ Public Sub 当月実績追加処理()
 
    '実績追加処理－マシン別
    'マシン別集計
-   'TODO:中子別で集計する。
    Dim read_index As Variant
    read_index = Array(4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,30,34,35,36,37,38)
-
    Do Until first_cell_of_sagyohyo.Value = ""
+      Dim nakago_by_machine As Object
+      Set nakago_by_machine = CreateObject("Scripting.Dictionary")
       '追加先シート処理開始位置指定
       Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
-
-      'マシンごとの中子別集計を格納する連想配列
-      Dim nippo_by_nakago As Object
-      Set nippo_by_nakago = CreateObject(“Scripting.Dictionary”)
       'A.ループ条件：マシンコードが変わるまで。
       Do Until machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
-         nakago_code = first_cell_of_sagyohyo.Offset(3, 0).Value
+         Dim nippo_by_nakago As Object
+         Set nippo_by_nakago = CreateObject("Scripting.Dictionary")
          'データの流れ例：
-         'マシン：4, 中子:8, 格納データ：x(24) 1行目
-         'マシン：4, 中子:8, 格納データ：x(24) 2行目
-         'マシン：4, 中子:9, 格納データ：x(24) 3行目
-         'マシン：5, 中子:2, 格納データ：x(24) 5行目
+         'マシン：4, 中子:8, 格納データ：x(23) 1行目
+         'マシン：4, 中子:8, 格納データ：x(23) 2行目
+         'マシン：4, 中子:9, 格納データ：x(23) 3行目
+         'マシン：5, 中子:2, 格納データ：x(23) 5行目
          'Dictionary nippo_by_nakago = [中子コード][格納データ]
          '０．Aの1ループ：辞書型nippo_by_nakagoを初期化
          '１．Bの1ループ：nippo_by_nakagoに中子コード8と1行目の24つのデータを登録
@@ -193,36 +190,29 @@ Public Sub 当月実績追加処理()
          '４．Aの1ループ：nippo_by_nakagoは配列nakago_by_machineに格納
          'B.ループ条件：中子コードが変わるまで。
          Do Until nakago_code <> first_cell_of_sagyohyo.Offset(3, 0).Value
-            Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
-            Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
-            Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
-            Com4 = Com4 + first_cell_of_sagyohyo.Offset(0, 7).Value
-            Com5 = Com5 + first_cell_of_sagyohyo.Offset(0, 8).Value
-            Com6 = Com6 + first_cell_of_sagyohyo.Offset(0, 9).Value
-            If first_cell_of_sagyohyo.Offset(0, 9).Value > 0 Then
-               count = count + 1
+            Dim j As Integer
+            j=0
+            '（マシンコードの中で）初めての中子コードだったとき新登録
+            If nippo_by_nakago.Exists(nakago_code) = False Then
+               Dim nippo(23) As Integer
+               Erase nippo
+               nippo_by_nakago.Add nakago_code,nippo
             End If
-            Com7 = Com7 + first_cell_of_sagyohyo.Offset(0, 10).Value
-            Com8 = Com8 + first_cell_of_sagyohyo.Offset(0, 11).Value
-            Com9 = Com9 + first_cell_of_sagyohyo.Offset(0, 12).Value
-            Com10 = Com10 + first_cell_of_sagyohyo.Offset(0, 13).Value
-            Com11 = Com11 + first_cell_of_sagyohyo.Offset(0, 14).Value
-            Com12 = Com12 + first_cell_of_sagyohyo.Offset(0, 15).Value
-            Com13 = Com13 + first_cell_of_sagyohyo.Offset(0, 16).Value
-            Com14 = Com14 + first_cell_of_sagyohyo.Offset(0, 17).Value
-            Com15 = Com15 + first_cell_of_sagyohyo.Offset(0, 18).Value
-            Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
-            Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
-            Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
-            Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
-            Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
-            Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
-            Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
-            Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
-            Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+            For Each i In read_index
+               nippo_by_nakago.Item(nakago_code)(j) = nippo_by_nakago.Item(nakago_code)(j) + first_cell_of_sagyohyo.Offset(0, i)
+               If i = 9 Then
+                  If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
+                     count = count + 1
+                  End If
+               End If
+            Next i
+            '1行読み終わったら次行へ
             Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
+            nakago_code = first_cell_of_sagyohyo.Offset(3, 0).Value
          Loop
          '中子別でデータ集計完了
+         'TODO: 1つのマシンコードにつき複数の辞書を管理
+         '配列を使用する
       Loop
 
       'マシンコード位置設定
