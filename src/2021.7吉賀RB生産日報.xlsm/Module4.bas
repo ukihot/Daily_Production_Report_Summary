@@ -21,8 +21,8 @@ Public Sub 当月実績追加処理()
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
    Dim logger As New Log
-   Dim row_memory(9) As Integer
-   Dim blank_row(9) As Integer
+   Dim machine_memory_row() As Variant
+   Dim blank_row() As Variant
 
    '初期設定
    Application.ScreenUpdating = False
@@ -32,9 +32,6 @@ Public Sub 当月実績追加処理()
    nippo_syukei_sheet = "日報集計"
    nippo_nyuryoku_sheet = "日報入力"
    sagyohyo_sheet = "作業表"
-   Erase row_memory
-   Erase blank_row
-
    '処理開始
    myBtn = MsgBox("当月実績追加処理を開始します", vbYesNo + vbExclamation, "当月実績追加処理")
    If myBtn = vbNo Then
@@ -129,6 +126,7 @@ Public Sub 当月実績追加処理()
       End If
       Set first_cell_of_machine = first_cell_of_machine.Offset(1, 0)
    Loop
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    '実績追加処理－マシン別
    'マシン別集計
    Dim read_index As Variant
@@ -159,26 +157,17 @@ Public Sub 当月実績追加処理()
          '1行読み終わったら次行へ
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
-      '中子ごとにデータ集計完了、次行に移っているためマシンコードを再設定
-      machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
-      'TODO: fix
-      'マシンコードが経験済みだったらシート「マシン別集計」に空行を挿入
-      blank_row(machine_code-1) = machine_code + 7
-      row_memory(machine_code) = row_memory(machine_code) + 1
-      If row_memory(machine_code) > 1 Then
+      'マシンコードが初回でないならシート「マシン別集計」に空行を挿入
+      blank_row = Array(8,8,8,8,8,8,8,8,8,8)
+      machine_memory_row = Array(0,0,0,0,0,0,0,0,0,0)
+      machine_memory_row(machine_code-1) = machine_memory_row(machine_code-1) + 1
+      If machine_memory_row(machine_code-1) <> 1 Then
          Cells(blank_row(machine_code-1),1).EntireRow.Insert
-         blank_row(machine_code-1) = blank_row(machine_code-1) + 1
          Dim x As Integer
-         For x = machine_code  To 9
+         For x = 0 To 9
             blank_row(x) = blank_row(x) + 1
          Next x
       End If
-      '追加先シート処理開始位置指定
-      Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
-      'マシンコード位置設定
-      Do Until machine_code = first_cell_of_target_summary.Offset(0, 0).Value
-         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-      Loop
       With first_cell_of_target_summary
          .Offset(0, 2).Value = nakago_name
          .Offset(0, 3).Value = nippo_by_nakago(0)      'ショット数
@@ -220,16 +209,13 @@ Public Sub 当月実績追加処理()
       '作業エリア初期化
       count = 0   '金型交換回数
    Loop
-   Set nakago_by_machine = nothing
-   '位置の設定
-   Range("A1").Select
 
+   Call TotsuzenoOwari(logger)
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
    Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(sagyohyo_sheet).Range("A5")
-
    'インデックス初期化
    i = 4
 
