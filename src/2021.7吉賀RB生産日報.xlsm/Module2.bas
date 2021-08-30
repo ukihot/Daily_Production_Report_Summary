@@ -47,6 +47,7 @@ Public Sub NippouShuukei_Update(ByVal nippo_nyuryoku_cell As Object, ByVal nippo
         nippo_syukei_cell.Offset(0, 37).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 32).Value 'ê∂éYã‡äz
         nippo_syukei_cell.Offset(0, 38).Value = nippo_nyuryoku_cell.Offset(0, 21).Value * nippo_nyuryoku_cell.Offset(0, 32).Value 'ïsó«ã‡äz
         nippo_syukei_cell.Offset(0, 39).Value = nippo_nyuryoku_cell.Offset(0, -4).Value 'íÜéqñº
+        nippo_syukei_cell.Offset(0, 40).Value = nippo_nyuryoku_cell.Offset(0, -6).Value 'É}ÉVÉìñº
         Set nippo_syukei_cell = nippo_syukei_cell.Offset(1, 0)
         Set nippo_nyuryoku_cell = nippo_nyuryoku_cell.Offset(1, 0)
     Loop
