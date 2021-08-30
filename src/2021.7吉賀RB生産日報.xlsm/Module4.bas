@@ -98,13 +98,11 @@ Public Sub 当月実績追加処理()
          .Apply
       End With
    End With
-
    '処理開始位置の設定
    Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(sagyohyo_sheet).Range("A5")
    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value  '出勤総時間
    count = 0   '金型交換回数
    update_target = "マシン別集計"
-
    '追加先シート初期化
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
@@ -120,7 +118,6 @@ Public Sub 当月実績追加処理()
    'クリア範囲指定
    Range(Cells(7, 1), Cells(i, 32)).Select
    Selection.ClearContents
-
    'マシン名取り込み
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    Set first_cell_of_machine = Workbooks(ActiveWorkbook.Name).Worksheets(mst_machine).Range("B4")
@@ -132,7 +129,6 @@ Public Sub 当月実績追加処理()
       End If
       Set first_cell_of_machine = first_cell_of_machine.Offset(1, 0)
    Loop
-
    '実績追加処理－マシン別
    'マシン別集計
    Dim read_index As Variant
@@ -140,10 +136,10 @@ Public Sub 当月実績追加処理()
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nippo_by_nakago(23) As Long
       Erase nippo_by_nakago
-
       'ループ条件：中子コードが変わるまで。
       nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+      nakago_name = first_cell_of_sagyohyo.Offset(0, 39).Value
       Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
          Dim k As Integer
          k = 0
@@ -165,7 +161,7 @@ Public Sub 当月実績追加処理()
       Loop
       '中子ごとにデータ集計完了、次行に移っているためマシンコードを再設定
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
-
+      'TODO: fix
       'マシンコードが経験済みだったらシート「マシン別集計」に空行を挿入
       blank_row(machine_code-1) = machine_code + 7
       row_memory(machine_code) = row_memory(machine_code) + 1
@@ -184,6 +180,7 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       Loop
       With first_cell_of_target_summary
+         .Offset(0, 2).Value = nakago_name
          .Offset(0, 3).Value = nippo_by_nakago(0)      'ショット数
          .Offset(0, 4).Value = nippo_by_nakago(18)     '良品数
          .Offset(0, 5).Value = nippo_by_nakago(21)     '不良数
@@ -219,13 +216,11 @@ Public Sub 当月実績追加処理()
          .Offset(0, 30).Value = nippo_by_nakago(22) / (nippo_by_nakago(1) / 60)  '労働生産性（マシン）
          .Offset(0, 31).Value = nippo_by_nakago(22) / (nippo_by_nakago(3) / 60)  '労働生産性（人）
       End With
-
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       '作業エリア初期化
       count = 0   '金型交換回数
    Loop
    Set nakago_by_machine = nothing
-
    '位置の設定
    Range("A1").Select
 
