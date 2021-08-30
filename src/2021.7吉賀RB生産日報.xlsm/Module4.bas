@@ -20,9 +20,11 @@ Public Sub 当月実績追加処理()
    Dim update_target As String
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
+   Dim logger As New Log
 
    '初期設定
    Application.ScreenUpdating = False
+   Call logger.Init(ThisWorkbook.Path & "../test/debug.log")
 
    mst_machine = "マシン名"
    nippo_syukei_sheet = "日報集計"
@@ -132,8 +134,6 @@ Public Sub 当月実績追加処理()
    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value  '出勤総時間
    count = 0   '金型交換回数
 
-   'マシンコード抽出
-   machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
    update_target = "マシン別集計"
 
    '追加先シート初期化
@@ -167,14 +167,14 @@ Public Sub 当月実績追加処理()
    '実績追加処理－マシン別
    'マシン別集計
    Dim read_index As Variant
-   read_index = Array(4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,30,34,35,36,37,38)
+   read_index = Array(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 30, 34, 35, 36, 37, 38)
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nakago_by_machine As Object
       Set nakago_by_machine = CreateObject("Scripting.Dictionary")
+      Dim nakago_num As Object
+      Set nakago_num = CreateObject("Scripting.Dictionary")
       'A.ループ条件：マシンコードが変わるまで。
       Do Until machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
-         Dim nippo_by_nakago As Object
-         Set nippo_by_nakago = CreateObject("Scripting.Dictionary")
          'データの流れ例：
          'マシン：4, 中子:8, 格納データ：x(23) 1行目
          'マシン：4, 中子:8, 格納データ：x(23) 2行目
@@ -185,34 +185,58 @@ Public Sub 当月実績追加処理()
          '１．Bの1ループ：nippo_by_nakagoに中子コード8と1行目の24つのデータを登録
          '２．Bの2ループ：中子コードが同じなので「１．」のnippo_by_nakagoに加算
          '３．Bの1ループ：中子コードが異なるので中子コード9と3行目の24つのデータを登録
-         '４．Aの1ループ：nippo_by_nakagoは配列nakago_by_machineに格納
          'B.ループ条件：中子コードが変わるまで。
-         Do Until nakago_code <> first_cell_of_sagyohyo.Offset(3, 0).Value
-            Dim j As Integer
+         Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
+            Dim k As Integer
             k = 0
             '（マシンコードの中で）初めての中子コードだったとき新登録
             If nippo_by_nakago.Exists(nakago_code) = False Then
                Dim nippo(23) As Integer
                Erase nippo
-               nippo_by_nakago.Add nakago_code,nippo
+               nippo_by_nakago.Add nakago_code, nippo
             End If
-            For Each i In read_index
-               nippo_by_nakago.Item(nakago_code)(k) = nippo_by_nakago.Item(nakago_code)(k) + first_cell_of_sagyohyo.Offset(0, i)
+            For Each index In read_index
+               nippo_by_nakago.Item(nakago_code)(k) = nippo_by_nakago.Item(nakago_code)(k) + first_cell_of_sagyohyo.Offset(0, index)
                If i = 9 Then
                   If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
                      count = count + 1
                   End If
                End If
                k = k + 1
-            Next i
+            Next index
             '1行読み終わったら次行へ
             Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
-            nakago_code = first_cell_of_sagyohyo.Offset(3, 0).Value
+            nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
+            Debug.Print "NAKAGO_CODE:", nakago_code
          Loop
          '中子別でデータ集計完了
          'TODO: 1つのマシンコードにつき複数の辞書を管理
-         '配列を使用する
+         'マシンごとの中子生産種類数をカウント
+         Debug.Print "MACHINE_CODE", machine_code
+         If nakago_num.Exists(machine_code) = False Then
+            nakago_num.Add machine_code, 1
+            Debug.Print "INSERT:", machine_code, nakago_num.Item(machine_code)
+         Else
+            nakago_num.Item(machine_code) = nakago_num.Item(machine_code) + 1
+            Debug.Print "UPDATE:", machine_code, nakago_num.Item(machine_code)
+         End If
+         machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
       Loop
+      'シート「マシン別集計」に中子分の空行を挿入
+      Dim initial_row As Integer
+      initial_row = 8
+      For Each Key In nakago_num
+         Dim blank_row_num As Integer
+         blank_row_num = nakago_num.Item(Key)
+         If blank_row_num > 1 Then
+            Range(initial_row & ":" & initial_row + blank_row_num - 1).Insert
+            initial_row = initial_row + blank_row_num + 1
+         End If
+         Debug.Print initial_row, "行目に空行を挿入"
+      Next Key
+
+      'SKIP: Test
+      Call TotsuzenoOwari
 
       '追加先シート処理開始位置指定
       Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
@@ -259,7 +283,6 @@ Public Sub 当月実績追加処理()
       End With
 
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-      machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
       '作業エリア初期化
       Com1 = 0   'ショット
       Com2 = 0   '稼動時間
@@ -289,8 +312,6 @@ Public Sub 当月実績追加処理()
       count = 0   '金型交換回数
    Loop
 
-   'SKIP: Test
-   Call TotsuzenoOwari()
    '位置の設定
    Range("A1").Select
 
@@ -781,7 +802,7 @@ Public Sub 当月実績追加処理()
       ComWK = 0   '計算ワーク
    Loop
    'SKIP: Test
-   Call TotsuzenoOwari()
+   Call TotsuzenoOwari
    '品名別ショット数集計開始
    Dim wb As Workbook
    Dim 元品番 As Object
@@ -862,7 +883,7 @@ Public Sub 当月実績追加処理()
       End If
       'チェック用
       元品番.Offset(0, -1).Interior.ColorIndex = 3
-      continue:
+continue:
          Set 元品番 = 元品番.Offset(1, 0)
    Loop
    'ゼロ自動入力
