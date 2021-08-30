@@ -27,7 +27,7 @@ Public Sub 当月実績追加処理()
    '初期設定
    Application.ScreenUpdating = False
    '德永専用デバッグ
-   Call logger.Init("D:\Daily_Production_Report_Summary\bin\test\debug.log")
+   'Call logger.Init("D:\Daily_Production_Report_Summary\bin\test\debug.log")
    mst_machine = "マシン名"
    nippo_syukei_sheet = "日報集計"
    nippo_nyuryoku_sheet = "日報入力"
@@ -37,7 +37,7 @@ Public Sub 当月実績追加処理()
    If myBtn = vbNo Then
       Exit Sub
    End If
-   Call logger.WriteLog("処理開始")
+   'Call logger.WriteLog("処理開始")
 
    '作業領域クリア（作業表）
    Worksheets(sagyohyo_sheet).Activate
@@ -104,7 +104,7 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
+   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
    'インデックス初期値
    i = 7
    '実データ領域確認
@@ -145,9 +145,9 @@ Public Sub 当月実績追加処理()
          k = 0
          For Each index In read_index
             if first_cell_of_sagyohyo.Offset(0, index) <> "" Then
-               Call logger.WriteLog("machine_code = " & machine_code & ", nakago_code = " & nakago_code & ", k = " & k & ", index = " & index & " : " & first_cell_of_sagyohyo.Offset(0, index))
+               'Call logger.WriteLog("machine_code = " & machine_code & ", nakago_code = " & nakago_code & ", k = " & k & ", index = " & index & " : " & first_cell_of_sagyohyo.Offset(0, index))
                nippo_by_nakago(k) = nippo_by_nakago(k) + first_cell_of_sagyohyo.Offset(0, index)
-               Call logger.WriteLog("NAKAGO_SUMMARY : " & nippo_by_nakago(k))
+               'Call logger.WriteLog("NAKAGO_SUMMARY : " & nippo_by_nakago(k))
                If i = 9 Then
                   If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
                      count = count + 1
@@ -161,25 +161,25 @@ Public Sub 当月実績追加処理()
       Loop
       'マシンコードが初回でないならシート「マシン別集計」に空行を挿入
       machine_memory_row(machine_code-1) = machine_memory_row(machine_code-1) + 1
-      Call logger.WriteLog("[ BLANK INSERT PROCESS ]: START")
-      Call logger.WriteLog("INSERT_COUNT = " & machine_memory_row(machine_code-1))
+      'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: START")
+      'Call logger.WriteLog("INSERT_COUNT = " & machine_memory_row(machine_code-1))
       If machine_memory_row(machine_code-1) <> 1 Then
-         Call logger.WriteLog("[ BLANK INSERT PROCESS ]: BEFORE")
-         Call logger.WriteLog("TARGET_INSERT_ROW = [" & blank_row(0) & " , " & blank_row(1) & " , " & blank_row(2) & " , " & blank_row(3) & " , " & blank_row(4) & " , " & blank_row(5) & " , " & blank_row(6) & " , " & blank_row(7) & " , " & blank_row(8) & " , " & blank_row(9) & " ]")
-         Call logger.WriteLog("MACHINE_CODE = " & machine_code & ", NAKAGO_CODE = " & nakago_code)
+         'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: BEFORE")
+         'Call logger.WriteLog("TARGET_INSERT_ROW = [" & blank_row(0) & " , " & blank_row(1) & " , " & blank_row(2) & " , " & blank_row(3) & " , " & blank_row(4) & " , " & blank_row(5) & " , " & blank_row(6) & " , " & blank_row(7) & " , " & blank_row(8) & " , " & blank_row(9) & " ]")
+         'Call logger.WriteLog("MACHINE_CODE = " & machine_code & ", NAKAGO_CODE = " & nakago_code)
          Cells(blank_row(machine_code-1),1).EntireRow.Insert
          For x = 0 To 9
          blank_row(x) = blank_row(x) + 1
          Next x
-         Call logger.WriteLog("[ BLANK INSERT PROCESS ]: AFTER")
-         Call logger.WriteLog("TARGET_INSERT_ROW = [" & blank_row(0) & " , " & blank_row(1) & " , " & blank_row(2) & " , " & blank_row(3) & " , " & blank_row(4) & " , " & blank_row(5) & " , " & blank_row(6) & " , " & blank_row(7) & " , " & blank_row(8) & " , " & blank_row(9) & " ]")
+         'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: AFTER")
+         'Call logger.WriteLog("TARGET_INSERT_ROW = [" & blank_row(0) & " , " & blank_row(1) & " , " & blank_row(2) & " , " & blank_row(3) & " , " & blank_row(4) & " , " & blank_row(5) & " , " & blank_row(6) & " , " & blank_row(7) & " , " & blank_row(8) & " , " & blank_row(9) & " ]")
       End If
       If machine_memory_row(machine_code-1) = 1 Then
          For x = 0 To 9
          blank_row(x) = blank_row(x) + 1
          Next x
       End If
-      Call logger.WriteLog("[ BLANK INSERT PROCESS ]: END")
+      'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: END")
       With first_cell_of_target_summary
          .Offset(0, 2).Value = nakago_name
          .Offset(0, 3).Value = nippo_by_nakago(0)      'ショット数
@@ -221,7 +221,6 @@ Public Sub 当月実績追加処理()
       '作業エリア初期化
       count = 0   '金型交換回数
    Loop
-   Call TotsuzenoOwari(logger)
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
@@ -854,6 +853,6 @@ End Sub
 
 Sub TotsuzenoOwari(logger As Log)
    MsgBox "処理をやめました。", vbOKOnly + vbInformation, "通知"
-   Call logger.WriteLog("強制終了")
+   'Call logger.WriteLog("強制終了")
    End
 End Sub
