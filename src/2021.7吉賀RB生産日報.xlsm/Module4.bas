@@ -9,7 +9,7 @@ Public Sub 当月実績追加処理()
    Dim nippo_nyuryoku_cell As Object, nippo_syukei_cell As Object
    Dim i As Integer, InM As Integer, Lcnt As Integer
    Dim Com1, Com2, Com3, Com5, Com6, Com7, Com8, Com9, Com10 As Long
-   Dim Com11, Com12, Com13, Com14, Com15, Com16, Com17, Com18, Com19, ComWK As Long
+   Dim Com11, Com12, Com13, Com14, Com15, Com16, Com17, Com18, Com19 As Long
    Dim Com20, Com21, Com22, Com23, Com24, Com28, Com29, Com30, Com31, Com32 As Long
    Dim Com4, Com25, Com26, Com27 As Single
    Dim SVtime, count As Long
@@ -21,6 +21,8 @@ Public Sub 当月実績追加処理()
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
    Dim logger As New Log
+   Dim row_memory(9) As Integer
+   Dim blank_row(9) As Integer
 
    '初期設定
    Application.ScreenUpdating = False
@@ -131,7 +133,6 @@ Public Sub 当月実績追加処理()
    Com30 = 0   '生産金額
    Com31 = 0   '不良金額
    Com32 = 0   '良品数
-   ComWK = 0   '計算ワーク
    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value  '出勤総時間
    count = 0   '金型交換回数
 
@@ -171,71 +172,53 @@ Public Sub 当月実績追加処理()
    read_index = Array(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 30, 34, 35, 36, 37, 38)
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nakago_by_machine As Object
-      Set nakago_by_machine = CreateObject("Scripting.Dictionary")
       Dim nakago_num As Object
+      Dim nippo(23) As Long
+      Set nakago_by_machine = CreateObject("Scripting.Dictionary")
       Set nakago_num = CreateObject("Scripting.Dictionary")
-      'A.ループ条件：マシンコードが変わるまで。
+      Erase nippo
+
+      'ループ条件：中子コードが変わるまで。
+      nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
-      Do Until machine_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
-         'Dictionary nakago_by_machine = [中子コード][格納データ]
-         '０．Aの1ループ：辞書型nakago_by_machineを初期化
-         '１．Bの1ループ：nakago_by_machineに中子コード8と1行目の24つのデータを登録
-         '２．Bの2ループ：中子コードが同じなので「１．」のnakago_by_machineに加算
-         '３．Bの1ループ：中子コードが異なるので中子コード9と3行目の24つのデータを登録
-         'B.ループ条件：中子コードが変わるまで。
-         nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
-         Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
-            Dim k As Integer
-            k = 0
-            '（マシンコードの中で）初めての中子コードだったとき新登録
-            If nakago_by_machine.Exists(nakago_code) = False Then
-               Dim nippo(23) As Long
-               Erase nippo
-               nakago_by_machine.Add nakago_code, nippo
-            End If
-            For Each index In read_index
-               'RISK: オーバーフロー
-               if first_cell_of_sagyohyo.Offset(0, index) <> "" Then
-                  Call logger.WriteLog("machine_code = " & machine_code & "k = " & k & ": index = " & index & ":: " & first_cell_of_sagyohyo.Offset(0, index))
-                  nakago_by_machine.Item(nakago_code)(k) = nakago_by_machine.Item(nakago_code)(k) + first_cell_of_sagyohyo.Offset(0, index)
-                  If i = 9 Then
-                     If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
-                        count = count + 1
-                     End If
+      Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
+         Dim k As Integer
+         k = 0
+         '（マシンコードの中で）初めての中子コードだったとき新登録
+         If nakago_by_machine.Exists(nakago_code) = False Then
+            nakago_by_machine.Add nakago_code, nippo
+         End If
+         For Each index In read_index
+            if first_cell_of_sagyohyo.Offset(0, index) <> "" Then
+               Call logger.WriteLog("machine_code = " & machine_code & "nakago_code = " & nakago_code & "k = " & k & ": index = " & index & " : " & first_cell_of_sagyohyo.Offset(0, index))
+               nakago_by_machine.Item(nakago_code)(k) = nakago_by_machine.Item(nakago_code)(k) + first_cell_of_sagyohyo.Offset(0, index)
+               If i = 9 Then
+                  If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
+                     count = count + 1
                   End If
                End If
-               k = k + 1
-            Next index
-            '1行読み終わったら次行へ
-            Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
-            Call logger.WriteLog(nakago_code)
-         Loop
-         '中子別でデータ集計完了
-         'マシンごとの中子生産種類数をカウント
-         If nakago_num.Exists(machine_code) = False Then
-            nakago_num.Add machine_code, 1
-         Else
-            nakago_num.Item(machine_code) = nakago_num.Item(machine_code) + 1
-         End If
-         machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+            End If
+            k = k + 1
+         Next index
+         '1行読み終わったら次行へ
+         Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
+      '中子ごとにデータ集計完了、次行に移っているためマシンコードを再設定
+      machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
 
-      'シート「マシン別集計」に中子分の空行を挿入
-      Dim initial_row As Integer
-      initial_row = 8
-      For Each Key In nakago_num
-         Call logger.WriteLog("BLANK")
-         Dim blank_row_num As Integer
-         blank_row_num = nakago_num.Item(Key)
-         If blank_row_num > 1 Then
-            Range(initial_row & ":" & initial_row + blank_row_num - 1).Insert
-            initial_row = initial_row + blank_row_num + 1
-         End If
-      Next Key
-
-      'SKIP: Test
-      Call TotsuzenoOwari(logger)
-
+      Erase row_memory
+      Erase blank_row
+      blank_row(machine_code-1) = machine_code + 7
+      row_memory(machine_code) = row_memory(machine_code) + 1
+      'マシンコードが経験済みだったらシート「マシン別集計」に空行を挿入
+      If row_memory(machine_code) > 1 Then
+         Cells(blank_row(machine_code-1),1).EntireRow.Insert
+         blank_row(machine_code-1) = blank_row(machine_code-1) + 1
+         Dim x As Integer
+         For x = machine_code  To 9
+            blank_row(x) = blank_row(x) + 1
+         Next x
+      End If
       '追加先シート処理開始位置指定
       Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
       'マシンコード位置設定
@@ -244,69 +227,44 @@ Public Sub 当月実績追加処理()
       Loop
       'TODO: 中子別で出力する
       With first_cell_of_target_summary
-         .Offset(0, 2).Value = Com1      'ショット数
-         .Offset(0, 3).Value = Com32     '良品数
-         .Offset(0, 4).Value = Com18     '不良数
-         .Offset(0, 5).Value = Com2 / 60     'マシン稼働時間
-         .Offset(0, 6).Value = Com3 / 60     'マシン生産時間
-         .Offset(0, 7).Value = Com4 / 60     'ＯＰ作業時間
-         .Offset(0, 8).Value = Com5 / 60     '始業作業
-         .Offset(0, 9).Value = Com6 / 60     '金型交換
-         .Offset(0, 10).Value = Com7 / 60    '昇温待ち
-         .Offset(0, 11).Value = count      '型交換回数（どこから？）
-         .Offset(0, 12).Value = Com8 / 60    '型調整
-         .Offset(0, 13).Value = Com9 / 60    '故障停止
-         .Offset(0, 14).Value = Com11 / 60   '金型清掃
-         .Offset(0, 15).Value = Com10 / 60   '終了作業
-         .Offset(0, 16).Value = Com12 / 60   'Ｒｂ教示
-         .Offset(0, 17).Value = Com13 / 60   '他機対応待ち
-         .Offset(0, 18).Value = Com14 / 60   '離型剤
-         .Offset(0, 19).Value = Com15 / 60   '中子割れ処理
-         .Offset(0, 20).Value = Com16 / 60   'その他
-         .Offset(0, 21).Value = Com27 / 1000  '使用量
-         .Offset(0, 22).Value = Com28 / 1000  '良品使用量
-         .Offset(0, 23).Value = Com29 / 1000  '不良使用量
-         .Offset(0, 24).Value = Com30 / 1000  '生産金額
-         .Offset(0, 25).Value = Com31 / 1000  '不良金額
-         .Offset(0, 27).Value = (Com2 / 60) / SVtime '設備負荷率
-         .Offset(0, 28).Value = Com3 / Com2   '設備稼働率
-         .Offset(0, 29).Value = Com30 / (Com2 / 60)  '労働生産性（マシン）
-         .Offset(0, 30).Value = Com30 / (Com4 / 60)  '労働生産性（人）
-         If Com18 <> 0 Then
-            WkCom = Com18 / (Com18 + Com32)
+         .Offset(0, 3).Value = nippo(0)      'ショット数
+         .Offset(0, 4).Value = nippo(18)     '良品数
+         .Offset(0, 5).Value = nippo(21)     '不良数
+         .Offset(0, 6).Value = nippo(1) / 60     'マシン稼働時間
+         .Offset(0, 7).Value = nippo(2) / 60     'マシン生産時間
+         .Offset(0, 8).Value = nippo(3) / 60     'ＯＰ作業時間
+         .Offset(0, 9).Value = nippo(4) / 60     '始業作業
+         .Offset(0, 10).Value = nippo(5) / 60     '金型交換
+         .Offset(0, 11).Value = nippo(6) / 60    '昇温待ち
+         .Offset(0, 12).Value = count      '型交換回数（どこから？）
+         .Offset(0, 13).Value = nippo(7) / 60    '型調整
+         .Offset(0, 14).Value = nippo(8) / 60    '故障停止
+         .Offset(0, 15).Value = nippo(10) / 60   '金型清掃
+         .Offset(0, 16).Value = nippo(9) / 60   '終了作業
+         .Offset(0, 17).Value = nippo(11) / 60   'Ｒｂ教示
+         .Offset(0, 18).Value = nippo(12) / 60   '他機対応待ち
+         .Offset(0, 19).Value = nippo(13) / 60   '離型剤
+         .Offset(0, 20).Value = nippo(14) / 60   '中子割れ処理
+         .Offset(0, 21).Value = nippo(15) / 60   'その他
+         .Offset(0, 22).Value = nippo(19) / 1000  '使用量
+         .Offset(0, 23).Value = nippo(20) / 1000  '良品使用量
+         .Offset(0, 24).Value = nippo(21) / 1000  '不良使用量
+         .Offset(0, 25).Value = nippo(22) / 1000  '生産金額
+         .Offset(0, 26).Value = nippo(23) / 1000  '不良金額
+         If nippo(17) <> 0 Then
+            WkCom = nippo(17) / (nippo(17) + nippo(18))
          Else
             WkCom = 0
          End If
-         .Offset(0, 26).Value = WkCom    '不良率
+         .Offset(0, 27).Value = WkCom    '不良率
+         .Offset(0, 28).Value = (nippo(1) / 60) / SVtime '設備負荷率
+         .Offset(0, 29).Value = nippo(2) / nippo(1)   '設備稼働率
+         .Offset(0, 30).Value = nippo(22) / (nippo(1) / 60)  '労働生産性（マシン）
+         .Offset(0, 31).Value = nippo(22) / (nippo(3) / 60)  '労働生産性（人）
       End With
 
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       '作業エリア初期化
-      Com1 = 0   'ショット
-      Com2 = 0   '稼動時間
-      Com3 = 0   '生産時間
-      Com4 = 0   'ＯＰ作業時間
-      Com5 = 0   '始業時間
-      Com6 = 0   '金型交換
-      Com7 = 0   '昇温待ち
-      Com8 = 0   '金型調整
-      Com9 = 0   'マシン故障停止
-      Com10 = 0   '終業時間
-      Com11 = 0   '型清掃
-      Com12 = 0   'Ｒｂ教示
-      Com13 = 0   '他機対応待ち
-      Com14 = 0   '離型剤
-      Com15 = 0   '中子割れ処理
-      Com16 = 0   'その他
-      Com17 = 0   '手直不良（良品に含まれる）
-      Com18 = 0   '造型不良（廃棄不良）
-      Com27 = 0   '砂総量
-      Com28 = 0   '砂良品
-      Com29 = 0   '砂不良
-      Com30 = 0   '生産金額
-      Com31 = 0   '不良金額
-      Com32 = 0   '良品数
-      ComWK = 0   '計算ワーク
       count = 0   '金型交換回数
    Loop
 
@@ -368,7 +326,6 @@ Public Sub 当月実績追加処理()
    Com30 = 0   '生産金額
    Com31 = 0   '不良金額
    Com32 = 0   '良品数
-   ComWK = 0   '計算ワーク
    count = 0   '金型交換回数
 
    nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value      '中子コード
@@ -507,7 +464,6 @@ Public Sub 当月実績追加処理()
       Com30 = 0   '生産金額
       Com31 = 0   '不良金額
       Com32 = 0   '良品数
-      ComWK = 0   '計算ワーク
       count = 0   '金型交換回数
    Loop
 
@@ -574,7 +530,6 @@ Public Sub 当月実績追加処理()
    Com25 = 0   'キャンドル残
    Com26 = 0   'その他
    Com32 = 0   '良品数
-   ComWK = 0   '計算ワーク
 
    update_target = "不良集計【マシン】"
 
@@ -674,7 +629,6 @@ Public Sub 当月実績追加処理()
       Com25 = 0   'キャンドル残
       Com26 = 0   'その他
       Com32 = 0   '良品数
-      ComWK = 0   '計算ワーク
    Loop
 
    '位置の設定
@@ -714,7 +668,6 @@ Public Sub 当月実績追加処理()
    Com25 = 0   'キャンドル残
    Com26 = 0   'その他
    Com32 = 0   '良品数
-   ComWK = 0   '計算ワーク
 
    '追加先シート初期化
    '作業用ワークシートアクティブ化（品名別－該当月）
@@ -797,7 +750,6 @@ Public Sub 当月実績追加処理()
       Com25 = 0   'キャンドル残
       Com26 = 0   'その他
       Com32 = 0   '良品数
-      ComWK = 0   '計算ワーク
    Loop
 
    '品名別ショット数集計開始
