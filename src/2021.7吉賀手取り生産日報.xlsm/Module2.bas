@@ -1,3 +1,4 @@
+Attribute VB_Name = "Module2"
 
 Public Sub NippouShuukei_Update(ByVal nippo_nyuryoku_cell As Object, ByVal nippo_syukei_cell As Object)
     'ƒZƒ‹‰Šú‰»

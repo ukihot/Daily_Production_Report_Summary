@@ -131,8 +131,8 @@ Public Sub 当月実績追加処理()
    'マシン別集計
    Dim read_index As Variant
    read_index = Array(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 30, 34, 35, 36, 37, 38)
-   blank_row = Array(8,8,8,8,8,8,8,8,8,8)
-   machine_memory_row = Array(0,0,0,0,0,0,0,0,0,0)
+   blank_row = Array(8, 8, 8, 8, 8, 8, 8, 8, 8, 8)
+   machine_memory_row = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nippo_by_nakago(23) As Long
       Erase nippo_by_nakago
@@ -144,7 +144,7 @@ Public Sub 当月実績追加処理()
          Dim k As Integer
          k = 0
          For Each index In read_index
-            if first_cell_of_sagyohyo.Offset(0, index) <> "" Then
+            If first_cell_of_sagyohyo.Offset(0, index) <> "" Then
                'Call logger.WriteLog("machine_code = " & machine_code & ", nakago_code = " & nakago_code & ", k = " & k & ", index = " & index & " : " & first_cell_of_sagyohyo.Offset(0, index))
                nippo_by_nakago(k) = nippo_by_nakago(k) + first_cell_of_sagyohyo.Offset(0, index)
                'Call logger.WriteLog("NAKAGO_SUMMARY : " & nippo_by_nakago(k))
@@ -160,21 +160,21 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
       'マシンコードが初回でないならシート「マシン別集計」に空行を挿入
-      machine_memory_row(machine_code-1) = machine_memory_row(machine_code-1) + 1
+      machine_memory_row(machine_code - 1) = machine_memory_row(machine_code - 1) + 1
       'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: START")
       'Call logger.WriteLog("INSERT_COUNT = " & machine_memory_row(machine_code-1))
-      If machine_memory_row(machine_code-1) <> 1 Then
+      If machine_memory_row(machine_code - 1) <> 1 Then
          'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: BEFORE")
          'Call logger.WriteLog("TARGET_INSERT_ROW = [" & blank_row(0) & " , " & blank_row(1) & " , " & blank_row(2) & " , " & blank_row(3) & " , " & blank_row(4) & " , " & blank_row(5) & " , " & blank_row(6) & " , " & blank_row(7) & " , " & blank_row(8) & " , " & blank_row(9) & " ]")
          'Call logger.WriteLog("MACHINE_CODE = " & machine_code & ", NAKAGO_CODE = " & nakago_code)
-         Cells(blank_row(machine_code-1),1).EntireRow.Insert
+         Cells(blank_row(machine_code - 1), 1).EntireRow.Insert
          For x = 0 To 9
          blank_row(x) = blank_row(x) + 1
          Next x
          'Call logger.WriteLog("[ BLANK INSERT PROCESS ]: AFTER")
          'Call logger.WriteLog("TARGET_INSERT_ROW = [" & blank_row(0) & " , " & blank_row(1) & " , " & blank_row(2) & " , " & blank_row(3) & " , " & blank_row(4) & " , " & blank_row(5) & " , " & blank_row(6) & " , " & blank_row(7) & " , " & blank_row(8) & " , " & blank_row(9) & " ]")
       End If
-      If machine_memory_row(machine_code-1) = 1 Then
+      If machine_memory_row(machine_code - 1) = 1 Then
          For x = 0 To 9
          blank_row(x) = blank_row(x) + 1
          Next x
@@ -710,8 +710,7 @@ Public Sub 当月実績追加処理()
    Dim temp As Object
 
    'ショット数集計ファイルを読み出し
-   'Set wb = Workbooks.Open(Filename:=ThisWorkbook.Path & "\..\..\ショット管理表\【吉賀】ショット数集計.xls ")
-   Set wb = Workbooks.Open(Filename:=ThisWorkbook.Path & "\ショット管理表\【吉賀】ショット数集計.xls ")
+   Set wb = Workbooks.Open(Filename:=ThisWorkbook.Path & "\..\..\ショット管理表\【吉賀】ショット数集計.xls ")
    '集計月の算出
    Set 生産日 = ThisWorkbook.Worksheets("日報入力").Range("G5")
    If Month(生産日.Value) <> 12 Then
