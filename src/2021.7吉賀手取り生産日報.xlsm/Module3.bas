@@ -219,9 +219,6 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
       i = i + 1
       Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
    Loop
-   'SKIP
-   MsgBox "ˆ—‚ğ‚â‚ß‚Ü‚µ‚½B", vbOKOnly + vbInformation, "’Ê’m"
-   End
 
    '•i–¼•Ê‚É•À‚Ñ‘Ö‚¦
    Range(Cells(5, 1), Cells(i, 41)).Sort _
