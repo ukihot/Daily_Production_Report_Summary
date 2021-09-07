@@ -151,7 +151,7 @@ Public Sub 当月実績追加処理()
 
 'マシン名取り込み
    Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
-   Set first_cell_of_machine = Worksheets(MSt2).Range("B4")
+   Set first_cell_of_machine = Worksheets(mst_machine).Range("B4")
    Do Until first_cell_of_machine.Value = ""
       If first_cell_of_machine.Offset(0, 1).Value <> "" Then
          first_cell_of_target_summary.Offset(0, 0).Value = first_cell_of_machine.Offset(0, 0).Value
@@ -196,7 +196,7 @@ Public Sub 当月実績追加処理()
          Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
-      マシンコード位置設定
+      'マシンコード位置設定
       Do Until nakago_code = first_cell_of_target_summary.Offset(0, 0).Value
          Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       Loop
