@@ -15,14 +15,13 @@ Public Sub 当月実績追加処理()
    Dim SVtime, count As Long
    Dim WkCom As Double
    Dim myBtn As Integer
-   Dim machine_code As String
+   Dim machine_code As Integer
    Dim nakago_name As String, nakago_code As String
    Dim update_target As String
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
    Dim logger As New Log
-   Dim machine_memory_row() As Variant
-   Dim blank_row() As Variant
+   Dim blank_row As Integer, bk_machine_code As Integer
 
    '初期設定
    Application.ScreenUpdating = False
@@ -302,28 +301,6 @@ Public Sub 当月実績追加処理()
    Worksheets(update_target).Activate
    '処理開始位置の設定
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
-   'インデックス初期値
-   i = 7
-   '実データ領域確認
-   Do Until first_cell_of_target_summary.Value = ""
-      i = i + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
-   'クリア範囲指定
-   'Range(Cells(7, 1), Cells(i, 32)).Select
-   'Selection.ClearContents
-   Range(Cells(7, "C"), Cells(Range("C" & Rows.Count).End(xlUp).Row, "C")).EntireRow.ClearContents
-   'マシン名取り込み
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
-   Set first_cell_of_machine = Workbooks(ActiveWorkbook.Name).Worksheets(mst_machine).Range("B4")
-   Do Until first_cell_of_machine.Value = ""
-      If first_cell_of_machine.Offset(0, 1).Value <> "" Then
-         first_cell_of_target_summary.Offset(0, 0).Value = first_cell_of_machine.Offset(0, 0).Value
-         first_cell_of_target_summary.Offset(0, 1).Value = first_cell_of_machine.Offset(0, 1).Value
-         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-      End If
-      Set first_cell_of_machine = first_cell_of_machine.Offset(1, 0)
-   Loop
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    '実績追加処理－マシン別
    'マシン別集計
@@ -354,13 +331,13 @@ Public Sub 当月実績追加処理()
    '[22] = 37 // 生産金額
    '[23] = 38 // 不良金額
 
-   blank_row = Array(7,7,7,7,7,7,7,7,7,7)
-   machine_memory_row = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+   blank_row = 7
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nippo_by_nakago(23) As Long
       Erase nippo_by_nakago
       nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+      bk_machine_code = 0
       nakago_name = first_cell_of_sagyohyo.Offset(0, 39).Value
       'ループ条件：中子コードが変わるまで。
       Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
@@ -382,16 +359,15 @@ Public Sub 当月実績追加処理()
          '1行読み終わったら次行へ
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
-
-      machine_memory_row(machine_code - 1) = machine_memory_row(machine_code - 1) + 1
-      'マシンコードが初回でないならシート「マシン別集計」に空行を挿入
-      If machine_memory_row(machine_code - 1) <> 1 Then
-         Cells(blank_row(machine_code - 1), 1).EntireRow.Insert
+      'マシンコードが前回と同じかどうか
+      If bk_machine_code = machine_code Then
+         Cells(blank_row, 1).EntireRow.Insert
       End If
-      For x = 0 To 9
-            blank_row(x) = blank_row(x) + 1
-      Next x
+      bk_machine_code = machine_code
+      blank_row = blank_row + 1
       With first_cell_of_target_summary
+         .Offset(0, 0).Value = machine_code
+         .Offset(0, 1).Value = WorksheetFunction.VLookup(machine_code, Workbooks(ActiveWorkbook.Name).Worksheets("マシン名").Range("B:C"), 2)
          .Offset(0, 2).Value = nakago_name
          .Offset(0, 3).Value = nippo_by_nakago(0)      'ショット数
          .Offset(0, 4).Value = nippo_by_nakago(18)     '良品数
@@ -432,9 +408,6 @@ Public Sub 当月実績追加処理()
       '作業エリア初期化
       count = 0   '金型交換回数
    Loop
-   'データの最終行番号取得し空白行を削除
-   Range(Cells(7, "D"), Cells(Range("D" & Rows.Count).End(xlUp).Row, "D")).SpecialCells(xlCellTypeBlanks).EntireRow.Delete
-
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
