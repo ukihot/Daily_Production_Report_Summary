@@ -71,7 +71,203 @@ Public Sub 当月実績追加処理()
       Set nippo_syukei_cell = nippo_syukei_cell.Offset(1, 0)
    Loop
 
-   'マシン別集計作業開始
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'旧マシン別集計作業開始
+   '作業用ワークシートアクティブ化（作業表）
+   Worksheets(sagyohyo_sheet).Activate
+   '処理開始位置の設定
+   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(sagyohyo_sheet).Range("A5")
+   'インデックス初期化
+   i = 4
+   '実データ領域確認
+   Do Until first_cell_of_sagyohyo.Value = ""
+      i = i + 1
+      Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
+   Loop
+
+   'マシン別に並び替え
+   Range(Cells(5, 1), Cells(i, 41)).Sort _
+   Key1:=Columns("B")
+
+   '処理開始位置の設定
+   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(sagyohyo_sheet).Range("A5")
+
+   '作業領域初期化
+   Com1 = 0    'ショット
+   Com2 = 0    '稼動時間
+   Com3 = 0    '生産時間
+   Com4 = 0    'ＯＰ作業時間
+   Com5 = 0    '始業時間
+   Com6 = 0    '金型交換
+   Com7 = 0    '昇温待ち
+   Com8 = 0    '金型調整
+   Com9 = 0    'マシン故障停止
+   Com10 = 0   '終業時間
+   Com11 = 0   '型清掃
+   Com12 = 0   'Ｒｂ教示
+   Com13 = 0   '他機対応待ち
+   Com14 = 0   '離型剤
+   Com15 = 0   '中子割れ処理
+   Com16 = 0   'その他
+   Com17 = 0   '手直不良（良品に含まれる）
+   Com18 = 0   '造型不良（廃棄不良）
+   Com19 = 0   'ボス割れ表
+   Com20 = 0   'ボス割れ裏
+   Com21 = 0   '幅木割れ
+   Com22 = 0   'フィン割れ
+   Com23 = 0   '幅木充填
+   Com24 = 0   'フィン充填
+   Com25 = 0   'キャンドル残
+   Com26 = 0   'その他
+   Com27 = 0   '砂総量
+   Com28 = 0   '砂良品
+   Com29 = 0   '砂不良
+   Com30 = 0   '生産金額
+   Com31 = 0   '不良金額
+   Com32 = 0   '良品数
+   SVtime = 0  '出勤総時間
+   count = 0   '金型交換回数
+'
+   nakago_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+   SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value
+'
+   update_target = "マシン別集計"
+
+'追加先シート初期化
+   '作業用ワークシートアクティブ化（マシン別－該当月）
+   Worksheets(update_target).Activate
+   '処理開始位置の設定
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   'インデックス初期値
+   i = 7
+   '実データ領域確認
+   Do Until first_cell_of_target_summary.Value = ""
+      i = i + 1
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+   Loop
+   'クリア範囲指定
+   Range(Cells(7, 1), Cells(i, 32)).Select
+   Selection.ClearContents
+
+'マシン名取り込み
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   Set first_cell_of_machine = Worksheets(MSt2).Range("B4")
+   Do Until first_cell_of_machine.Value = ""
+      If first_cell_of_machine.Offset(0, 1).Value <> "" Then
+         first_cell_of_target_summary.Offset(0, 0).Value = first_cell_of_machine.Offset(0, 0).Value
+         first_cell_of_target_summary.Offset(0, 1).Value = first_cell_of_machine.Offset(0, 1).Value
+         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+      End If
+      Set first_cell_of_machine = first_cell_of_machine.Offset(1, 0)
+   Loop
+
+'実績追加処理－マシン別
+   'マシン別集計
+   Do Until first_cell_of_sagyohyo.Value = ""
+      '追加先シート処理開始位置指定
+      Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+      Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 1).Value
+         Com1 = Com1 + first_cell_of_sagyohyo.Offset(0, 4).Value
+         Com2 = Com2 + first_cell_of_sagyohyo.Offset(0, 5).Value
+         Com3 = Com3 + first_cell_of_sagyohyo.Offset(0, 6).Value
+         Com4 = Com4 + first_cell_of_sagyohyo.Offset(0, 7).Value
+         Com5 = Com5 + first_cell_of_sagyohyo.Offset(0, 8).Value
+         Com6 = Com6 + first_cell_of_sagyohyo.Offset(0, 9).Value
+         If first_cell_of_sagyohyo.Offset(0, 9).Value > 0 Then
+            count = count + 1
+         End If
+         Com7 = Com7 + first_cell_of_sagyohyo.Offset(0, 10).Value
+         Com8 = Com8 + first_cell_of_sagyohyo.Offset(0, 11).Value
+         Com9 = Com9 + first_cell_of_sagyohyo.Offset(0, 12).Value
+         Com10 = Com10 + first_cell_of_sagyohyo.Offset(0, 13).Value
+         Com11 = Com11 + first_cell_of_sagyohyo.Offset(0, 14).Value
+         Com12 = Com12 + first_cell_of_sagyohyo.Offset(0, 15).Value
+         Com13 = Com13 + first_cell_of_sagyohyo.Offset(0, 16).Value
+         Com14 = Com14 + first_cell_of_sagyohyo.Offset(0, 17).Value
+         Com15 = Com15 + first_cell_of_sagyohyo.Offset(0, 18).Value
+         Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
+         Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
+         Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
+         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
+         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
+         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
+         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
+         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+         Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
+      Loop
+      マシンコード位置設定
+      Do Until nakago_code = first_cell_of_target_summary.Offset(0, 0).Value
+         Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+      Loop
+      With first_cell_of_target_summary
+         .Offset(0, 2).Value = Com1           'ショット数
+         .Offset(0, 3).Value = Com32          '良品数
+         .Offset(0, 4).Value = Com18          '不良数
+         .Offset(0, 5).Value = Com2 / 60      'マシン稼働時間
+         .Offset(0, 6).Value = Com3 / 60      'マシン生産時間
+         .Offset(0, 7).Value = Com4 / 60      'ＯＰ作業時間
+         .Offset(0, 8).Value = Com5 / 60      '始業作業
+         .Offset(0, 9).Value = Com6 / 60      '金型交換
+         .Offset(0, 10).Value = Com7 / 60     '昇温待ち
+         .Offset(0, 11).Value = count         '型交換回数（どこから？）
+         .Offset(0, 12).Value = Com8 / 60     '型調整
+         .Offset(0, 13).Value = Com9 / 60     '故障停止
+         .Offset(0, 14).Value = Com11 / 60    '金型清掃
+         .Offset(0, 15).Value = Com10 / 60    '終了作業
+         .Offset(0, 16).Value = Com12 / 60    'Ｒｂ教示
+         .Offset(0, 17).Value = Com13 / 60    '他機対応待ち
+         .Offset(0, 18).Value = Com14 / 60    '離型剤
+         .Offset(0, 19).Value = Com15 / 60    '中子割れ処理
+         .Offset(0, 20).Value = Com16 / 60    'その他
+         .Offset(0, 21).Value = Com27 / 1000  '使用量
+         .Offset(0, 22).Value = Com28 / 1000  '良品使用量
+         .Offset(0, 23).Value = Com29 / 1000  '不良使用量
+         .Offset(0, 24).Value = Com30 / 1000  '生産金額
+         .Offset(0, 25).Value = Com31 / 1000  '不良金額
+         .Offset(0, 27).Value = (Com2 / 60) / SVtime '設備負荷率
+         .Offset(0, 28).Value = Com3 / Com2   '設備稼働率
+         .Offset(0, 29).Value = Com30 / (Com2 / 60)  '労働生産性（マシン）
+         .Offset(0, 30).Value = Com30 / (Com4 / 60)  '労働生産性（人）
+
+         If Com18 <> 0 Then
+            WkCom = Com18 / (Com18 + Com32)
+         Else
+            WkCom = 0
+         End If
+         .Offset(0, 26).Value = WkCom     '不良率
+      End With
+      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+      nakago_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+      '作業エリア初期化
+      Com1 = 0    'ショット
+      Com2 = 0    '稼動時間
+      Com3 = 0    '生産時間
+      Com4 = 0    'ＯＰ作業時間
+      Com5 = 0    '始業時間
+      Com6 = 0    '金型交換
+      Com7 = 0    '昇温待ち
+      Com8 = 0    '金型調整
+      Com9 = 0    'マシン故障停止
+      Com10 = 0   '終業時間
+      Com11 = 0   '型清掃
+      Com12 = 0   'Ｒｂ教示
+      Com13 = 0   '他機対応待ち
+      Com14 = 0   '離型剤
+      Com15 = 0   '中子割れ処理
+      Com16 = 0   'その他
+      Com17 = 0   '手直不良（良品に含まれる）
+      Com18 = 0   '造型不良（廃棄不良）
+      Com27 = 0   '砂総量
+      Com28 = 0   '砂良品
+      Com29 = 0   '砂不良
+      Com30 = 0   '生産金額
+      Com31 = 0   '不良金額
+      Com32 = 0   '良品数
+      count = 0   '金型交換回数
+   Loop
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+   '新マシン別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
    '処理開始位置の設定
@@ -101,7 +297,7 @@ Public Sub 当月実績追加処理()
    Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(sagyohyo_sheet).Range("A5")
    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value  '出勤総時間
    count = 0   '金型交換回数
-   update_target = "マシン別集計"
+   update_target = "新マシン別集計"
    '追加先シート初期化
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
@@ -169,7 +365,7 @@ Public Sub 当月実績追加処理()
          .Offset(0, 2).Value = nakago_name
          .Offset(0, 3).Value = nippo_by_nakago(0)      'ショット数
          .Offset(0, 4).Value = nippo_by_nakago(18)     '良品数
-         .Offset(0, 5).Value = nippo_by_nakago(21)     '不良数
+         .Offset(0, 5).Value = nippo_by_nakago(17)     '不良数
          .Offset(0, 6).Value = nippo_by_nakago(1) / 60     'マシン稼働時間
          .Offset(0, 7).Value = nippo_by_nakago(2) / 60     'マシン生産時間
          .Offset(0, 8).Value = nippo_by_nakago(3) / 60     'ＯＰ作業時間
@@ -205,6 +401,9 @@ Public Sub 当月実績追加処理()
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
       count = 0   '金型交換回数
    Loop
+
+   'データの最終行番号取得し空白行を削除
+   Range(Cells(7, "D"), Cells(Range("D" & Rows.Count).End(xlUp).Row, "D")).SpecialCells(xlCellTypeBlanks).EntireRow.Delete
 
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
