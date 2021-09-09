@@ -403,7 +403,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    'データの最終行番号取得し空白行を削除
-   Range(Cells(7, "D"), Cells(Range("D" & Rows.Count).End(xlUp).Row, "D")).SpecialCells(xlCellTypeBlanks).EntireRow.Delete
+   Range(Cells(7, "D"), Cells(Range("D" & Rows.count).End(xlUp).Row, "D")).SpecialCells(xlCellTypeBlanks).EntireRow.Delete
 
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
