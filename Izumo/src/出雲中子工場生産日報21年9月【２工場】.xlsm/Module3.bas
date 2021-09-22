@@ -613,47 +613,50 @@ Public Sub 当月実績追加処理()
 
    '最終行追加
    last_row = Range("B7").End(xlDown).Row + 1
-   Range("B" & last_row) = "合計"
-   With Range("D" & last_row)
-      .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
-      .AutoFill Destination:=.Resize(1, 24)
+   With Worksheets(update_target)
+      .Range("B" & last_row) = "合計"
+      With .Range("D" & last_row)
+         .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+         .AutoFill Destination:=.Resize(1, 24)
+      End With
+      .Range("AB" & last_row) = .Range("F" & last_row).Value / ( .Range("E" & last_row).Value + .Range("F" & last_row).Value )
+      .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
+      .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
+      .Range("AE" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("H" & last_row).Value
+      .Range("AF" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("I" & last_row).Value
+      .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
+      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / H" & last_row & ""
+      .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
    End With
-   Range("AB" & last_row) = Range("F" & last_row).Value / ( Range("E" & last_row).Value + Range("F" & last_row).Value )
-   Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
-   Range("AD" & last_row) = Range("H" & last_row).Value /  Range("G" & last_row).Value
-   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("H" & last_row).Value
-   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("I" & last_row).Value
-   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 /  Range("D" & last_row).Value
-
    '作業用ワークシートアクティブ化（品名別－該当月）
    Worksheets(update_target).Activate
 
    '処理開始位置の設定
-   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
+   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
 
    'インデックス初期化
-   i = 7
-
-   '実データ領域確認
-   Do Until first_cell_of_sagyohyo.Value = ""
-      i = i + 1
-      Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
-   Loop
-
-   '生産金額順（降順）に並び替え
-   Range(Cells(7, 1), Cells(i, 32)).Sort _
-   Key1:=Columns("Z"), Order1:=xlDescending
-
-   '品名に通番付与（生産金額順）
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
-   'カウント初期化
-   Lcnt = 1
-   '実行
-   Do Until first_cell_of_target_summary.Value = ""
-      first_cell_of_target_summary.Offset(0, -1).Value = Lcnt   '通番
-      Lcnt = Lcnt + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   'i = 7
+'
+   ''実データ領域確認
+   'Do Until first_cell_of_sagyohyo.Value = ""
+   '   i = i + 1
+   '   Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
+   'Loop
+'
+   ''生産金額順（降順）に並び替え
+   'Range(Cells(7, 1), Cells(i, 32)).Sort _
+   'Key1:=Columns("Z"), Order1:=xlDescending
+'
+   ''品名に通番付与（生産金額順）
+   'Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
+   ''カウント初期化
+   'Lcnt = 1
+   ''実行
+   'Do Until first_cell_of_target_summary.Value = ""
+   '   first_cell_of_target_summary.Offset(0, -1).Value = Lcnt   '通番
+   '   Lcnt = Lcnt + 1
+   '   Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+   'Loop
 
    '20091120追加不良別集計
    'マシン別不良集計作業開始
