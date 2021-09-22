@@ -625,7 +625,7 @@ Public Sub 当月実績追加処理()
       .Range("AE" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("H" & last_row).Value
       .Range("AF" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("I" & last_row).Value
       .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
-      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / H" & last_row & ""
+      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
       .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
    End With
    '作業用ワークシートアクティブ化（品名別－該当月）

@@ -417,12 +417,12 @@ Public Sub 当月実績追加処理()
       .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
       .AutoFill Destination:=.Resize(1, 24)
    End With
-   Range("AB" & last_row) = Range("F" & last_row).Value / ( Range("E" & last_row).Value + Range("F" & last_row).Value )
+   Range("AB" & last_row) = Range("F" & last_row).Value / (Range("E" & last_row).Value + Range("F" & last_row).Value)
    Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
-   Range("AD" & last_row) = Range("H" & last_row).Value /  Range("G" & last_row).Value
-   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("H" & last_row).Value
-   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("I" & last_row).Value
-   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 /  Range("D" & last_row).Value
+   Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
+   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
+   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 / Range("I" & last_row).Value
+   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 / Range("D" & last_row).Value
 
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
@@ -555,7 +555,7 @@ Public Sub 当月実績追加処理()
          .Offset(0, 22).Value = Com27      '使用量
          .Offset(0, 23).Value = Com28      '良品使用量
          .Offset(0, 24).Value = Com29      '不良使用量
-         .Offset(0, 25).Value = Com30/1000      '生産金額
+         .Offset(0, 25).Value = Com30 / 1000    '生産金額
          .Offset(0, 26).Value = Com31      '不良金額
          .Offset(0, 28).Value = (Com2 / 60) / SVtime '設備負荷率
          If Com2 <> 0 Then
@@ -619,13 +619,13 @@ Public Sub 当月実績追加処理()
          .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
          .AutoFill Destination:=.Resize(1, 24)
       End With
-      .Range("AB" & last_row) = .Range("F" & last_row).Value / ( .Range("E" & last_row).Value + .Range("F" & last_row).Value )
+      .Range("AB" & last_row) = .Range("F" & last_row).Value / (.Range("E" & last_row).Value + .Range("F" & last_row).Value)
       .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
       .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
       .Range("AE" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("H" & last_row).Value
       .Range("AF" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("I" & last_row).Value
       .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
-      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / H" & last_row & ""
+      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
       .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
    End With
    '作業用ワークシートアクティブ化（品名別－該当月）

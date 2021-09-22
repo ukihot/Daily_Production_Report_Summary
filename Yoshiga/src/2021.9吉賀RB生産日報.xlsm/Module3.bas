@@ -1,4 +1,6 @@
 Attribute VB_Name = "Module3"
+'Option Explicit
+
 Public Sub 当月実績追加処理()
 
    Dim sagyohyo_sheet As String, mst_machine As String
@@ -18,16 +20,11 @@ Public Sub 当月実績追加処理()
    Dim update_target As String
    Dim M1, M2, M3, M4, M5, M6, M7, M8, M9, M10, M11, M12 As String
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
-   Dim blank_row(50) As Integer
-   Dim machine_memory_row(50) As Integer
-   Dim f As Integer
+   'Dim logger As New Log
+   Dim blank_row As Integer, bk_machine_code As Integer
 
    '初期設定
    Application.ScreenUpdating = False
-   For f = 0 To 50
-      blank_row(f) = 8
-      machine_memory_row(f) = 0
-   Next
    '德永専用デバッグ
    'Call logger.Init("D:\Daily_Production_Report_Summary\bin\test\debug.log")
    mst_machine = "マシン名"
@@ -302,30 +299,49 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
-   'インデックス初期値
-   i = 7
-   '実データ領域確認
-   Do Until first_cell_of_target_summary.Value = ""
-      i = i + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(Cells(7, 1), Cells(i, 32)).Select
+   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
    Selection.ClearContents
-
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
    '実績追加処理－マシン別
    'マシン別集計
    Dim read_index As Variant
    read_index = Array(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 30, 34, 35, 36, 37, 38)
+   '[0] = 4 // ショット数
+   '[1] = 5 // 稼働時間
+   '[2] = 6 // 生産時間
+   '[3] = 7 // OP作業時間
+   '[4] = 8 // 始業作業
+   '[5] = 9 // 金型交換
+   '[6] = 10 // 昇温待ち
+   '[7] = 11 // 金型調整
+   '[8] = 12 // マシン故障停止
+   '[9] = 13 // 終業作業
+   '[10] = 14 // 型清掃
+   '[11] = 15 // Rb教示
+   '[12] = 16 // 他機対応待ち
+   '[13] = 17 // 離散材
+   '[14] = 18 // 中子割れ処理
+   '[15] = 19 // その他
+   '[16] = 20 // 手直不良
+   '[17] = 21 // 造形不良数
+   '[18] = 30 // 良品数
+   '[19] = 34 // 総量
+   '[20] = 35 // 良品数
+   '[21] = 36 // 不良数
+   '[22] = 37 // 生産金額
+   '[23] = 38 // 不良金額
+
+   blank_row = 7
    Do Until first_cell_of_sagyohyo.Value = ""
       Dim nippo_by_nakago(23) As Long
       Erase nippo_by_nakago
-      'ループ条件：中子コードが変わるまで。
       nakago_code = first_cell_of_sagyohyo.Offset(0, 3).Value
       machine_code = first_cell_of_sagyohyo.Offset(0, 1).Value
+      bk_machine_code = 0
       nakago_name = first_cell_of_sagyohyo.Offset(0, 39).Value
+      'ループ条件：中子コードが変わるまで。
       Do Until nakago_code <> first_cell_of_sagyohyo.Offset(0, 3).Value
          Dim k As Integer
          k = 0
@@ -345,20 +361,12 @@ Public Sub 当月実績追加処理()
          '1行読み終わったら次行へ
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
-      'マシンコードが初回でないならシート「マシン別集計」に空行を挿入
-      machine_memory_row(machine_code) = machine_memory_row(machine_code) + 1
-      If machine_memory_row(machine_code) <> 1 Then
-         Cells(blank_row(machine_code), 1).EntireRow.Insert
-         Dim jj As Integer
-         For jj = 0 To 50
-            blank_row(jj) = blank_row(jj) + 1
-         Next
+      'マシンコードが前回と同じかどうか
+      If bk_machine_code = machine_code Then
+         Cells(blank_row, 1).EntireRow.Insert
       End If
-      If machine_memory_row(machine_code) = 1 Then
-         For jj = 0 To 50
-            blank_row(jj) = blank_row(jj) + 1
-         Next
-      End If
+      bk_machine_code = machine_code
+      blank_row = blank_row + 1
       With first_cell_of_target_summary
          .Offset(0, 0).Value = machine_code
          .Offset(0, 1).Value = WorksheetFunction.VLookup(machine_code, Workbooks(ActiveWorkbook.Name).Worksheets("マシン名").Range("B:C"), 2)
@@ -399,11 +407,22 @@ Public Sub 当月実績追加処理()
          .Offset(0, 31).Value = nippo_by_nakago(22) / (nippo_by_nakago(3) / 60)  '労働生産性（人）
       End With
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+      '作業エリア初期化
       count = 0   '金型交換回数
    Loop
-
-   'データの最終行番号取得し空白行を削除
-   Range(Cells(7, "D"), Cells(Range("D" & Rows.count).End(xlUp).Row, "D")).SpecialCells(xlCellTypeBlanks).EntireRow.Delete
+   '最終行追加
+   last_row = Range("B7").End(xlDown).Row + 1
+   Range("B" & last_row) = "合計"
+   With Range("D" & last_row)
+      .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+      .AutoFill Destination:=.Resize(1, 24)
+   End With
+   Range("AB" & last_row) = Range("F" & last_row).Value / (Range("E" & last_row).Value + Range("F" & last_row).Value)
+   Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
+   Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
+   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
+   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 / Range("I" & last_row).Value
+   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 / Range("D" & last_row).Value
 
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
@@ -470,18 +489,11 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
-   'インデックス初期値
-   i = 7
-   '実データ領域確認
-   Do Until first_cell_of_target_summary.Value = ""
-      i = i + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(Cells(7, 1), Cells(i, 32)).Select
+   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
    Selection.ClearContents
-
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
@@ -543,9 +555,8 @@ Public Sub 当月実績追加処理()
          .Offset(0, 22).Value = Com27      '使用量
          .Offset(0, 23).Value = Com28      '良品使用量
          .Offset(0, 24).Value = Com29      '不良使用量
-         .Offset(0, 25).Value = Com30      '生産金額
+         .Offset(0, 25).Value = Com30 / 1000    '生産金額
          .Offset(0, 26).Value = Com31      '不良金額
-         '.Offset(0, 27).Value = Com18 / Com32 * 100  '不良率
          .Offset(0, 28).Value = (Com2 / 60) / SVtime '設備負荷率
          If Com2 <> 0 Then
             .Offset(0, 29).Value = Com3 / Com2   '設備稼働率
@@ -600,35 +611,52 @@ Public Sub 当月実績追加処理()
       count = 0   '金型交換回数
    Loop
 
+   '最終行追加
+   last_row = Range("B7").End(xlDown).Row + 1
+   With Worksheets(update_target)
+      .Range("B" & last_row) = "合計"
+      With .Range("D" & last_row)
+         .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+         .AutoFill Destination:=.Resize(1, 24)
+      End With
+      .Range("AB" & last_row) = .Range("F" & last_row).Value / (.Range("E" & last_row).Value + .Range("F" & last_row).Value)
+      .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
+      .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
+      .Range("AE" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("H" & last_row).Value
+      .Range("AF" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("I" & last_row).Value
+      .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
+      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
+      .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
+   End With
    '作業用ワークシートアクティブ化（品名別－該当月）
    Worksheets(update_target).Activate
 
    '処理開始位置の設定
-   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
+   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
 
    'インデックス初期化
-   i = 7
-
-   '実データ領域確認
-   Do Until first_cell_of_sagyohyo.Value = ""
-      i = i + 1
-      Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
-   Loop
-
-   '生産金額順（降順）に並び替え
-   Range(Cells(7, 1), Cells(i, 32)).Sort _
-   Key1:=Columns("Z"), Order1:=xlDescending
-
-   '品名に通番付与（生産金額順）
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
-   'カウント初期化
-   Lcnt = 1
-   '実行
-   Do Until first_cell_of_target_summary.Value = ""
-      first_cell_of_target_summary.Offset(0, -1).Value = Lcnt   '通番
-      Lcnt = Lcnt + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   'i = 7
+'
+   ''実データ領域確認
+   'Do Until first_cell_of_sagyohyo.Value = ""
+   '   i = i + 1
+   '   Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
+   'Loop
+'
+   ''生産金額順（降順）に並び替え
+   'Range(Cells(7, 1), Cells(i, 32)).Sort _
+   'Key1:=Columns("Z"), Order1:=xlDescending
+'
+   ''品名に通番付与（生産金額順）
+   'Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
+   ''カウント初期化
+   'Lcnt = 1
+   ''実行
+   'Do Until first_cell_of_target_summary.Value = ""
+   '   first_cell_of_target_summary.Offset(0, -1).Value = Lcnt   '通番
+   '   Lcnt = Lcnt + 1
+   '   Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
+   'Loop
 
    '20091120追加不良別集計
    'マシン別不良集計作業開始
@@ -1024,9 +1052,6 @@ continue:
    Application.DisplayAlerts = False
    wb.Close (True)
    Application.DisplayAlerts = True
-   '位置の設定
-   Range("A1").Select
-   Application.ScreenUpdating = True
    MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
 End Sub
 
