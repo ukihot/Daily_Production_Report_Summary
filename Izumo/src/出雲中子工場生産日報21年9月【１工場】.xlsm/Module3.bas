@@ -264,7 +264,6 @@ Public Sub 当月実績追加処理()
       count = 0   '金型交換回数
    Loop
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
    '新マシン別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
@@ -303,7 +302,7 @@ Public Sub 当月実績追加処理()
    Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
    last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(first_cell_of_target_summary, Range("AG" & last_row)).Select
+   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
    Selection.ClearContents
    '実績追加処理－マシン別
    'マシン別集計
@@ -490,18 +489,11 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
-   'インデックス初期値
-   i = 7
-   '実データ領域確認
-   Do Until first_cell_of_target_summary.Value = ""
-      i = i + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(Cells(7, 1), Cells(i, 32)).Select
+   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
    Selection.ClearContents
-
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
@@ -563,9 +555,8 @@ Public Sub 当月実績追加処理()
          .Offset(0, 22).Value = Com27      '使用量
          .Offset(0, 23).Value = Com28      '良品使用量
          .Offset(0, 24).Value = Com29      '不良使用量
-         .Offset(0, 25).Value = Com30      '生産金額
+         .Offset(0, 25).Value = Com30/1000      '生産金額
          .Offset(0, 26).Value = Com31      '不良金額
-         '.Offset(0, 27).Value = Com18 / Com32 * 100  '不良率
          .Offset(0, 28).Value = (Com2 / 60) / SVtime '設備負荷率
          If Com2 <> 0 Then
             .Offset(0, 29).Value = Com3 / Com2   '設備稼働率

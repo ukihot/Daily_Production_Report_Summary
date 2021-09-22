@@ -555,7 +555,7 @@ Public Sub 当月実績追加処理()
          .Offset(0, 22).Value = Com27      '使用量
          .Offset(0, 23).Value = Com28      '良品使用量
          .Offset(0, 24).Value = Com29      '不良使用量
-         .Offset(0, 25).Value = Com30      '生産金額
+         .Offset(0, 25).Value = Com30/1000      '生産金額
          .Offset(0, 26).Value = Com31      '不良金額
          .Offset(0, 28).Value = (Com2 / 60) / SVtime '設備負荷率
          If Com2 <> 0 Then
@@ -613,7 +613,6 @@ Public Sub 当月実績追加処理()
 
    '最終行追加
    last_row = Range("B7").End(xlDown).Row + 1
-   
    Range("B" & last_row) = "合計"
    With Range("D" & last_row)
       .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
