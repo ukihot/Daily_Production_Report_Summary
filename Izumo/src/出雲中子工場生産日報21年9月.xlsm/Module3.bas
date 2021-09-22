@@ -22,7 +22,6 @@ Public Sub 当月実績追加処理()
    Dim S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11, S12 As String
    'Dim logger As New Log
    Dim blank_row As Integer, bk_machine_code As Integer
-   Dim last_row As Long
 
    '初期設定
    Application.ScreenUpdating = False
@@ -39,6 +38,12 @@ Public Sub 当月実績追加処理()
    End If
    'Call logger.WriteLog("処理開始")
 
+   '作業領域クリア（作業表）
+   Worksheets(sagyohyo_sheet).Activate
+   Range("A5:AM2000").Select
+   Selection.ClearContents
+   Range("A5").Select
+
    '処理開始位置の設定
    Set nippo_syukei_cell = Workbooks(ActiveWorkbook.Name).Worksheets(nippo_syukei_sheet).Range("A5")
    Set nippo_nyuryoku_cell = Workbooks(ActiveWorkbook.Name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
@@ -51,15 +56,10 @@ Public Sub 当月実績追加処理()
    Set nippo_syukei_cell = Workbooks(ActiveWorkbook.Name).Worksheets(nippo_syukei_sheet).Range("A5")
    Set nippo_nyuryoku_cell = Workbooks(ActiveWorkbook.Name).Worksheets(nippo_nyuryoku_sheet).Range("G5")
 
-   '作業領域クリア（作業表）
-   Worksheets(sagyohyo_sheet).Activate
-   Range("A5:AM2000").Select
-   Selection.ClearContents
-   Range("A5").Select
-   '対象となる実績データ確認および作業表作成
+   '実績データ確認
    Do Until nippo_syukei_cell.Value = ""
       With nippo_syukei_cell
-         '作業表作成
+      'データ移行
          For i = 0 To 39
             first_cell_of_sagyohyo.Offset(0, i).Value = .Offset(0, i).Value
          Next i
@@ -124,10 +124,10 @@ Public Sub 当月実績追加処理()
    Com32 = 0   '良品数
    SVtime = 0  '出勤総時間
    count = 0   '金型交換回数
-
+'
    nakago_code = first_cell_of_sagyohyo.Offset(0, 1).Value
    SVtime = first_cell_of_sagyohyo.Offset(-4, 0).Value
-
+'
    update_target = "マシン別集計"
 
 '追加先シート初期化
@@ -299,16 +299,10 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Worksheets(update_target).Range("B7")
-   'インデックス初期値
-   i = 7
-   '実データ領域確認
-   Do Until first_cell_of_target_summary.Value = ""
-      i = i + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(Cells(7, 1), Cells(i, 32)).Select
+   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
    Selection.ClearContents
    '実績追加処理－マシン別
    'マシン別集計
@@ -401,11 +395,12 @@ Public Sub 当月実績追加処理()
          .Offset(0, 24).Value = nippo_by_nakago(21) / 1000  '不良使用量
          .Offset(0, 25).Value = nippo_by_nakago(22) / 1000  '生産金額
          .Offset(0, 26).Value = nippo_by_nakago(23) / 1000  '不良金額
-         If nippo_by_nakago(17) <> 0 Then '不良率
-            .Offset(0, 27).Value = nippo_by_nakago(17) / (nippo_by_nakago(17) + nippo_by_nakago(18))
+         If nippo_by_nakago(17) <> 0 Then
+            WkCom = nippo_by_nakago(17) / (nippo_by_nakago(17) + nippo_by_nakago(18))
          Else
-            .Offset(0, 27).Value = 0
+            WkCom = 0
          End If
+         .Offset(0, 27).Value = WkCom    '不良率
          .Offset(0, 28).Value = (nippo_by_nakago(1) / 60) / SVtime '設備負荷率
          .Offset(0, 29).Value = nippo_by_nakago(2) / nippo_by_nakago(1)   '設備稼働率
          .Offset(0, 30).Value = nippo_by_nakago(22) / (nippo_by_nakago(1) / 60)  '労働生産性（マシン）
@@ -494,18 +489,11 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
-   'インデックス初期値
-   i = 7
-   '実データ領域確認
-   Do Until first_cell_of_target_summary.Value = ""
-      i = i + 1
-      Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   Loop
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(Cells(7, 1), Cells(i, 32)).Select
+   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
    Selection.ClearContents
-
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
@@ -623,6 +611,14 @@ Public Sub 当月実績追加処理()
       count = 0   '金型交換回数
    Loop
 
+   '最終行追加
+   last_row = Range("B7").End(xlDown).Row + 1
+   
+   Range("B" & last_row) = "合計"
+   With Range("D" & last_row)
+      .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+      .AutoFill Destination:=.Resize(1, 24)
+   End With
    Range("AB" & last_row) = Range("F" & last_row).Value / ( Range("E" & last_row).Value + Range("F" & last_row).Value )
    Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
    Range("AD" & last_row) = Range("H" & last_row).Value /  Range("G" & last_row).Value

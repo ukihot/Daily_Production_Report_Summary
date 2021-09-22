@@ -300,8 +300,11 @@ Public Sub 当月実績追加処理()
    '作業用ワークシートアクティブ化（マシン別－該当月）
    Worksheets(update_target).Activate
    '処理開始位置の設定
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
-   Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A7")
+   Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
+   last_row = Range("B7").End(xlDown).Row
+   'クリア範囲指定
+   Range(first_cell_of_target_summary, Range("AG" & last_row)).Select
+   Selection.ClearContents
    '実績追加処理－マシン別
    'マシン別集計
    Dim read_index As Variant
@@ -408,6 +411,20 @@ Public Sub 当月実績追加処理()
       '作業エリア初期化
       count = 0   '金型交換回数
    Loop
+   '最終行追加
+   last_row = Range("B7").End(xlDown).Row + 1
+   Range("B" & last_row) = "合計"
+   With Range("D" & last_row)
+      .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+      .AutoFill Destination:=.Resize(1, 24)
+   End With
+   Range("AB" & last_row) = Range("F" & last_row).Value / ( Range("E" & last_row).Value + Range("F" & last_row).Value )
+   Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
+   Range("AD" & last_row) = Range("H" & last_row).Value /  Range("G" & last_row).Value
+   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("H" & last_row).Value
+   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("I" & last_row).Value
+   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 /  Range("D" & last_row).Value
+
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate
@@ -602,6 +619,20 @@ Public Sub 当月実績追加処理()
       Com32 = 0   '良品数
       count = 0   '金型交換回数
    Loop
+
+   '最終行追加
+   last_row = Range("B7").End(xlDown).Row + 1
+   Range("B" & last_row) = "合計"
+   With Range("D" & last_row)
+      .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+      .AutoFill Destination:=.Resize(1, 24)
+   End With
+   Range("AB" & last_row) = Range("F" & last_row).Value / ( Range("E" & last_row).Value + Range("F" & last_row).Value )
+   Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
+   Range("AD" & last_row) = Range("H" & last_row).Value /  Range("G" & last_row).Value
+   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("H" & last_row).Value
+   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 /  Range("I" & last_row).Value
+   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 /  Range("D" & last_row).Value
 
    '作業用ワークシートアクティブ化（品名別－該当月）
    Worksheets(update_target).Activate
