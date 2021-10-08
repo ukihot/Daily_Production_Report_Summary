@@ -492,7 +492,7 @@ Public Sub 当月実績追加処理()
    Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
    last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
+   Range(first_cell_of_target_summary, Range("AJ" & last_row)).Select
    Selection.ClearContents
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
@@ -555,8 +555,8 @@ Public Sub 当月実績追加処理()
          .Offset(0, 22).Value = Com27      '使用量
          .Offset(0, 23).Value = Com28      '良品使用量
          .Offset(0, 24).Value = Com29      '不良使用量
-         .Offset(0, 25).Value = Com30 / 1000    '生産金額
-         .Offset(0, 26).Value = Com31      '不良金額
+         .Offset(0, 25).Value = Com30    '生産金額
+         .Offset(0, 26).Value = Com31    '不良金額
          .Offset(0, 28).Value = (Com2 / 60) / SVtime '設備負荷率
          If Com2 <> 0 Then
             .Offset(0, 29).Value = Com3 / Com2   '設備稼働率
@@ -577,6 +577,15 @@ Public Sub 当月実績追加処理()
             .Offset(0, 30).Value = 0
             .Offset(0, 31).Value = 0
          End If
+         .Offset(0, 33).Formula = "=VLOOKUP(C" & first_cell_of_target_summary.Row & " , 中子データ!B4:H236,7)"  '設定サイクル
+         If Com1 <> 0 Then
+            .Offset(0, 32).Value = (Com3 / 60) / Com1 * 3600 '実績サイクル
+            .Offset(0, 34).Value = .Offset(0, 33).Value / .Offset(0, 32).Value  '性能稼働率
+         Else
+            .Offset(0, 32).Value = 0
+            .Offset(0, 34).Value = 0
+         End If
+         .Offset(0, 35).Value = .Offset(0, 29).Value * .Offset(0, 34).Value * (1 - .Offset(0, 27).Value)  '設備総合効率
       End With
 
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
@@ -1058,3 +1067,5 @@ End Sub
 Sub セル色初期化()
    ThisWorkbook.Worksheets("品名別集計").Range("B7:B41").Interior.ColorIndex = 2
 End Sub
+
+
