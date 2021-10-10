@@ -492,7 +492,7 @@ Public Sub 当月実績追加処理()
    Set first_cell_of_target_summary = Worksheets(update_target).Range("A7")
    last_row = Range("B7").End(xlDown).Row
    'クリア範囲指定
-   Range(first_cell_of_target_summary, Range("AF" & last_row)).Select
+   Range(first_cell_of_target_summary, Range("AJ" & last_row)).Select
    Selection.ClearContents
    '実績追加処理－品名別
    '追加先シート処理開始位置指定
@@ -577,6 +577,15 @@ Public Sub 当月実績追加処理()
             .Offset(0, 30).Value = 0
             .Offset(0, 31).Value = 0
          End If
+         .Offset(0, 33).Formula = "=VLOOKUP(C" & first_cell_of_target_summary.Row & " , 中子データ!B4:K6004,10)"  '設定サイクル
+         If Com1 <> 0 Then
+            .Offset(0, 32).Value = (Com3 / 60) / Com1 * 3600 '実績サイクル
+            .Offset(0, 34).Value = .Offset(0, 33).Value / .Offset(0, 32).Value  '性能稼働率
+         Else
+            .Offset(0, 32).Value = 0
+            .Offset(0, 34).Value = 0
+         End If
+         .Offset(0, 35).Value = .Offset(0, 29).Value * .Offset(0, 34).Value * (1 - .Offset(0, 27).Value)  '設備総合効率
       End With
 
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
@@ -915,3 +924,5 @@ Public Sub 当月実績追加処理()
 
    MsgBox "処理を終わりました。", vbOKOnly + vbInformation, "通知"
 End Sub
+
+
