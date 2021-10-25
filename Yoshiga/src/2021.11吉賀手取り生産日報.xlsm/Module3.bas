@@ -637,8 +637,8 @@ Public Sub ìñåéé¿ê—í«â¡èàóù()
       .Range("AB" & last_row) = .Range("F" & last_row).Value / (.Range("E" & last_row).Value + .Range("F" & last_row).Value)
       .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
       .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
-      .Range("AE" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("H" & last_row).Value
-      .Range("AF" & last_row) = .Range("Z" & last_row).Value * 1000 / .Range("I" & last_row).Value
+      .Range("AE" & last_row) = .Range("Z" & last_row).Value  / .Range("H" & last_row).Value
+      .Range("AF" & last_row) = .Range("Z" & last_row).Value / .Range("I" & last_row).Value
       .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
       .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
       .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
