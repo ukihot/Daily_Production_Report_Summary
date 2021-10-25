@@ -422,7 +422,9 @@ Public Sub 当月実績追加処理()
    Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
    Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
    Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 / Range("I" & last_row).Value
-   Range("AG" & last_row) = Range("H" & last_row).Value * 3600 / Range("D" & last_row).Value
+   '最終行色付
+   Range("A" & 7 & ":AF" & last_row).Interior.ColorIndex = 0
+   Range("A" & last_row & ":AF" & last_row).Interior.ColorIndex = 20
 
    '品名別集計作業開始
    '作業用ワークシートアクティブ化（作業表）
@@ -530,7 +532,8 @@ Public Sub 当月実績追加処理()
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
 
-      With first_cell_of_target_summary  '20140408kometani  中子コードを記入するセルを追加したことで右に1個ずつずらした
+      With first_cell_of_target_summary
+         .Offset(0, 0).Formula = "=Row()-6"
          .Offset(0, 1).Value = nakago_name      '中子名
          .Offset(0, 2).Value = nakago_code      '中子コード　'20140408kometani　追加
          .Offset(0, 3).Value = Com1      'ショット数
@@ -622,6 +625,9 @@ Public Sub 当月実績追加処理()
 
    '最終行追加
    last_row = Range("B7").End(xlDown).Row + 1
+   '最終行色付
+   Range("A" & 7 & ":AJ" & last_row).Interior.ColorIndex = 0
+   Range("A" & last_row & ":AJ" & last_row).Interior.ColorIndex = 20
    With Worksheets(update_target)
       .Range("B" & last_row) = "合計"
       With .Range("D" & last_row)
@@ -637,37 +643,9 @@ Public Sub 当月実績追加処理()
       .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
       .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
    End With
-   '作業用ワークシートアクティブ化（品名別－該当月）
-   Worksheets(update_target).Activate
-
-   '処理開始位置の設定
-   Set first_cell_of_sagyohyo = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("C7")
-
-   'インデックス初期化
-   'i = 7
-'
-   ''実データ領域確認
-   'Do Until first_cell_of_sagyohyo.Value = ""
-   '   i = i + 1
-   '   Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
-   'Loop
-'
-   ''生産金額順（降順）に並び替え
-   'Range(Cells(7, 1), Cells(i, 32)).Sort _
-   'Key1:=Columns("Z"), Order1:=xlDescending
-'
-   ''品名に通番付与（生産金額順）
-   'Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("B7")
-   ''カウント初期化
-   'Lcnt = 1
-   ''実行
-   'Do Until first_cell_of_target_summary.Value = ""
-   '   first_cell_of_target_summary.Offset(0, -1).Value = Lcnt   '通番
-   '   Lcnt = Lcnt + 1
-   '   Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
-   'Loop
-
-   '20091120追加不良別集計
+   '生産金額順にソート
+   Range("A7:AJ" & last_row - 1).Sort _
+      Key1:=Range("Z7"), Order1:=xlDescending
    'マシン別不良集計作業開始
    '作業用ワークシートアクティブ化（作業表）
    Worksheets(sagyohyo_sheet).Activate

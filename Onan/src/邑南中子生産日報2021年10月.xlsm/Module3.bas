@@ -427,6 +427,7 @@ Public Sub 当月実績追加処理()
    Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 / Range("I" & last_row).Value
 
    '最終行色付
+   Range("A" & 7 & ":AF" & last_row).Interior.ColorIndex = 0
    Range("A" & last_row & ":AF" & last_row).Interior.ColorIndex = 20
 
    '品名別集計作業開始
@@ -653,6 +654,7 @@ Public Sub 当月実績追加処理()
    End With
 
    '最終行色付
+   Range("A" & 7 & ":AJ" & last_row).Interior.ColorIndex = 0
    Range("A" & last_row & ":AJ" & last_row).Interior.ColorIndex = 20
 
    'マシン別不良集計作業開始
