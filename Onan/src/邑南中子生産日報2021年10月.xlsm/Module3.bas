@@ -630,7 +630,7 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
    End If
 
    '¶Y‹àŠz‡‚Éƒ\[ƒg
-   Range("A7:AJ" & last_row -1).Sort _
+   Range("A7:AJ" & last_row - 1).Sort _
       Key1:=Range("Z7"), Order1:=xlDescending
 
    With Worksheets(update_target)
