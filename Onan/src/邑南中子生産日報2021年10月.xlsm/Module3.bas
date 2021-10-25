@@ -558,8 +558,8 @@ Public Sub 当月実績追加処理()
          .Offset(0, 22).Value = Com27      '使用量
          .Offset(0, 23).Value = Com28      '良品使用量
          .Offset(0, 24).Value = Com29      '不良使用量
-         .Offset(0, 25).Value = Com30 / 1000  '生産金額
-         .Offset(0, 26).Value = Com31 / 1000    '不良金額
+         .Offset(0, 25).Value = Com30  '生産金額
+         .Offset(0, 26).Value = Com31  '不良金額
          .Offset(0, 28).Value = (Com2 / 60) / SVtime '設備負荷率
          If Com2 <> 0 Then
             .Offset(0, 29).Value = Com3 / Com2   '設備稼働率
@@ -628,6 +628,11 @@ Public Sub 当月実績追加処理()
    If last_row > 100000 Then
       last_row = 8
    End If
+
+   '生産金額順にソート
+   Range("A7:AJ" & last_row -1).Sort _
+      Key1:=Range("Z7"), Order1:=xlDescending
+
    With Worksheets(update_target)
       .Range("B" & last_row) = "合計"
       With .Range("D" & last_row)
