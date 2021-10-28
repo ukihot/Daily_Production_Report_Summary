@@ -417,7 +417,7 @@ Public Sub ìñåéé¿ê—í«â¡èàóù()
       .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
       .AutoFill Destination:=.Resize(1, 24)
    End With
-   Range("AB" & last_row) = Range("F" & last_row).Value / (Range("E" & last_row).Value + Range("F" & last_row).Value)
+   Range("AB" & last_row) = Range("AA" & last_row).Value / (Range("AA" & last_row).Value + Range("Z" & last_row).Value)
    Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
    Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
    Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
@@ -634,7 +634,7 @@ Public Sub ìñåéé¿ê—í«â¡èàóù()
          .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
          .AutoFill Destination:=.Resize(1, 24)
       End With
-      .Range("AB" & last_row) = .Range("F" & last_row).Value / (.Range("E" & last_row).Value + .Range("F" & last_row).Value)
+      .Range("AB" & last_row) = .Range("AA" & last_row).Value / (.Range("AA" & last_row).Value + .Range("Z" & last_row).Value)
       .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
       .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
       .Range("AE" & last_row) = .Range("Z" & last_row).Value  / .Range("H" & last_row).Value

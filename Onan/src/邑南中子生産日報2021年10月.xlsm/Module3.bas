@@ -420,7 +420,7 @@ Public Sub 当月実績追加処理()
       .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
       .AutoFill Destination:=.Resize(1, 24)
    End With
-   Range("AB" & last_row) = Range("F" & last_row).Value / (Range("E" & last_row).Value + Range("F" & last_row).Value)
+   Range("AB" & last_row) = Range("AA" & last_row).Value / (Range("Z" & last_row).Value + Range("AA" & last_row).Value)
    Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
    Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
    Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
@@ -584,7 +584,7 @@ Public Sub 当月実績追加処理()
             .Offset(0, 30).Value = 0
             .Offset(0, 31).Value = 0
          End If
-         .Offset(0, 33).Formula = "=VLOOKUP(C" & first_cell_of_target_summary.Row & " , 中子データ!A4:J800,9)"  '設定サイクル
+         .Offset(0, 33).Formula = "=VLOOKUP(C" & first_cell_of_target_summary.Row & " , 中子データ!A4:J800,10)"  '設定サイクル
          If Com1 <> 0 Then
             .Offset(0, 32).Value = (Com3 / 60) / Com1 * 3600 '実績サイクル
             .Offset(0, 34).Value = .Offset(0, 33).Value / .Offset(0, 32).Value  '性能稼働率
@@ -643,7 +643,7 @@ Public Sub 当月実績追加処理()
          .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
          .AutoFill Destination:=.Resize(1, 24)
       End With
-      .Range("AB" & last_row) = .Range("F" & last_row).Value / (.Range("E" & last_row).Value + .Range("F" & last_row).Value)
+      .Range("AB" & last_row) = .Range("AA" & last_row).Value / (.Range("Z" & last_row).Value + .Range("AA" & last_row).Value)
       .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
       .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
       .Range("AE" & last_row) = .Range("Z" & last_row).Value / .Range("H" & last_row).Value
