@@ -649,7 +649,7 @@ Public Sub ìñåéé¿ê—í«â¡èàóù()
       .Range("AE" & last_row) = .Range("Z" & last_row).Value / .Range("H" & last_row).Value
       .Range("AF" & last_row) = .Range("Z" & last_row).Value / .Range("I" & last_row).Value
       .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
-      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AG7:AG" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
+      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AH7:AH" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
       .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
    End With
    'ê∂éYã‡äzèáÇ…É\Å[Ég
