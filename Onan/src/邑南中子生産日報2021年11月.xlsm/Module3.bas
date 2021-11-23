@@ -40,7 +40,7 @@ Public Sub 当月実績追加処理()
 
    '作業領域クリア（作業表）
    Worksheets(sagyohyo_sheet).Activate
-   Range("A5:AM2000").Select
+   Range("A5:AN2000").Select
    Selection.ClearContents
    Range("A5").Select
 
@@ -420,11 +420,30 @@ Public Sub 当月実績追加処理()
       .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
       .AutoFill Destination:=.Resize(1, 24)
    End With
-   Range("AB" & last_row) = Range("AA" & last_row).Value / (Range("Z" & last_row).Value + Range("AA" & last_row).Value)
-   Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
-   Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
-   Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
-   Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 / Range("I" & last_row).Value
+   If (Range("Z" & last_row).Value + Range("AA" & last_row).Value) = 0 Then
+      Range("AB" & last_row) = 0
+   Else
+      Range("AB" & last_row) = Range("AA" & last_row).Value / (Range("Z" & last_row).Value + Range("AA" & last_row).Value)
+   End If
+
+   If Range("G" & last_row).Value = 0 Then
+      Range("AD" & last_row) = 0
+   Else
+      Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
+   End If
+
+   If Range("H" & last_row).Value = 0 Then
+      Range("AE" & last_row) = 0
+   Else
+     Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
+   End If
+
+   If Range("I" & last_row).Value = 0 Then
+      Range("AF" & last_row) = 0
+   Else
+      Range("AF" & last_row) = Range("Z" & last_row).Value * 1000 / Range("I" & last_row).Value
+   End If
+
 
    '最終行色付
    Range("A" & 7 & ":AF" & last_row).Interior.ColorIndex = 0
@@ -632,30 +651,31 @@ Public Sub 当月実績追加処理()
    If last_row > 100000 Then
       last_row = 8
    End If
+   if last_row <> 8 then 
+      '生産金額順にソート
+      Range("A7:AJ" & last_row - 1).Sort _
+         Key1:=Range("Z7"), Order1:=xlDescending
 
-   '生産金額順にソート
-   Range("A7:AJ" & last_row - 1).Sort _
-      Key1:=Range("Z7"), Order1:=xlDescending
-
-   With Worksheets(update_target)
-      .Range("B" & last_row) = "合計"
-      With .Range("D" & last_row)
-         .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
-         .AutoFill Destination:=.Resize(1, 24)
+      With Worksheets(update_target)
+         .Range("B" & last_row) = "合計"
+         With .Range("D" & last_row)
+            .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
+            .AutoFill Destination:=.Resize(1, 24)
+         End With
+         .Range("AB" & last_row) = .Range("AA" & last_row).Value / (.Range("Z" & last_row).Value + .Range("AA" & last_row).Value)
+         .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
+         .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
+         .Range("AE" & last_row) = .Range("Z" & last_row).Value / .Range("H" & last_row).Value
+         .Range("AF" & last_row) = .Range("Z" & last_row).Value / .Range("I" & last_row).Value
+         .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
+         .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AH7:AH" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
+         .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
       End With
-      .Range("AB" & last_row) = .Range("AA" & last_row).Value / (.Range("Z" & last_row).Value + .Range("AA" & last_row).Value)
-      .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
-      .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
-      .Range("AE" & last_row) = .Range("Z" & last_row).Value / .Range("H" & last_row).Value
-      .Range("AF" & last_row) = .Range("Z" & last_row).Value / .Range("I" & last_row).Value
-      .Range("AG" & last_row) = .Range("H" & last_row).Value * 3600 / .Range("D" & last_row).Value
-      .Range("AI" & last_row).Formula = "=SUMPRODUCT(D7:D" & (last_row - 1) & " ,AH7:AH" & (last_row - 1) & ") / (H" & last_row & " * 3600)"
-      .Range("AJ" & last_row) = .Range("AI" & last_row).Value * .Range("AD" & last_row).Value * (1 - .Range("AB" & last_row).Value)
-   End With
 
-   '最終行色付
-   Range("A" & 7 & ":AJ" & last_row).Interior.ColorIndex = 0
-   Range("A" & last_row & ":AJ" & last_row).Interior.ColorIndex = 20
+      '最終行色付
+      Range("A" & 7 & ":AJ" & last_row).Interior.ColorIndex = 0
+      Range("A" & last_row & ":AJ" & last_row).Interior.ColorIndex = 20
+   End if
 
    'マシン別不良集計作業開始
    '作業用ワークシートアクティブ化（作業表）
