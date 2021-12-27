@@ -29,26 +29,40 @@ Public Sub NippouShuukei_Update(ByVal nippo_nyuryoku_cell As Object, ByVal nippo
         nippo_syukei_cell.Offset(0, 19).Value = nippo_nyuryoku_cell.Offset(0, 19).Value 'その他
         nippo_syukei_cell.Offset(0, 20).Value = nippo_nyuryoku_cell.Offset(0, 20).Value '手直し不良
         nippo_syukei_cell.Offset(0, 21).Value = nippo_nyuryoku_cell.Offset(0, 21).Value '造形不良数
-        nippo_syukei_cell.Offset(0, 22).Value = nippo_nyuryoku_cell.Offset(0, 22).Value 'ヒビ・カケ・スレ
-        nippo_syukei_cell.Offset(0, 23).Value = nippo_nyuryoku_cell.Offset(0, 23).Value 'アカ不良
-        nippo_syukei_cell.Offset(0, 24).Value = nippo_nyuryoku_cell.Offset(0, 24).Value '砂落ち不良
-        nippo_syukei_cell.Offset(0, 25).Value = nippo_nyuryoku_cell.Offset(0, 25).Value '充填不良
-        nippo_syukei_cell.Offset(0, 26).Value = nippo_nyuryoku_cell.Offset(0, 26).Value '焼成不良
-        nippo_syukei_cell.Offset(0, 27).Value = nippo_nyuryoku_cell.Offset(0, 27).Value '型ズレ不良
-        nippo_syukei_cell.Offset(0, 28).Value = nippo_nyuryoku_cell.Offset(0, 28).Value '作業中落下
-        nippo_syukei_cell.Offset(0, 29).Value = nippo_nyuryoku_cell.Offset(0, 29).Value 'その他
-        nippo_syukei_cell.Offset(0, 30).Value = nippo_nyuryoku_cell.Offset(0, -2).Value '良品数
-        nippo_syukei_cell.Offset(0, 31).Value = nippo_nyuryoku_cell.Offset(0, 30).Value '原料砂
-        nippo_syukei_cell.Offset(0, 32).Value = nippo_nyuryoku_cell.Offset(0, 31).Value '単重
-        nippo_syukei_cell.Offset(0, 33).Value = nippo_nyuryoku_cell.Offset(0, 32).Value '単価
-        nippo_syukei_cell.Offset(0, 34).Value = nippo_nyuryoku_cell.Offset(0, -3).Value * nippo_nyuryoku_cell.Offset(0, 4).Value * nippo_nyuryoku_cell.Offset(0, 31).Value '総量（使用量）
-        nippo_syukei_cell.Offset(0, 35).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 31).Value '良品数（使用量）
-        nippo_syukei_cell.Offset(0, 36).Value = nippo_syukei_cell.Offset(0, 34).Value - nippo_syukei_cell.Offset(0, 35).Value '不良数（使用量）
-        nippo_syukei_cell.Offset(0, 37).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 32).Value '生産金額
-        nippo_syukei_cell.Offset(0, 38).Value = nippo_nyuryoku_cell.Offset(0, 21).Value * nippo_nyuryoku_cell.Offset(0, 32).Value '不良金額
-        nippo_syukei_cell.Offset(0, 39).Value = nippo_nyuryoku_cell.Offset(0, -4).Value '中子名
+        nippo_syukei_cell.Offset(0, 22).Value = nippo_nyuryoku_cell.Offset(0, 22).Value 'クラック
+        nippo_syukei_cell.Offset(0, 23).Value = nippo_nyuryoku_cell.Offset(0, 23).Value '接着
+        nippo_syukei_cell.Offset(0, 24).Value = nippo_nyuryoku_cell.Offset(0, 24).Value '充填
+        nippo_syukei_cell.Offset(0, 25).Value = nippo_nyuryoku_cell.Offset(0, 25).Value '端数
+        nippo_syukei_cell.Offset(0, 26).Value = nippo_nyuryoku_cell.Offset(0, 26).Value '異物混入
+        nippo_syukei_cell.Offset(0, 27).Value = nippo_nyuryoku_cell.Offset(0, 27).Value '取り出し落下
+        nippo_syukei_cell.Offset(0, 28).Value = nippo_nyuryoku_cell.Offset(0, 28).Value '型しみつき
+        'ここから2項目追加したため, 列番号変更対応_20211227
+        'nippo_syukei_cell.Offset(0, 29).Value = nippo_nyuryoku_cell.Offset(0, 29).Value 'その他
+        'nippo_syukei_cell.Offset(0, 30).Value = nippo_nyuryoku_cell.Offset(0, -2).Value '良品数
+        'nippo_syukei_cell.Offset(0, 31).Value = nippo_nyuryoku_cell.Offset(0, 30).Value '原料砂
+        'nippo_syukei_cell.Offset(0, 32).Value = nippo_nyuryoku_cell.Offset(0, 31).Value '単重
+        'nippo_syukei_cell.Offset(0, 33).Value = nippo_nyuryoku_cell.Offset(0, 32).Value '単価
+        'nippo_syukei_cell.Offset(0, 34).Value = nippo_nyuryoku_cell.Offset(0, -3).Value * nippo_nyuryoku_cell.Offset(0, 4).Value * nippo_nyuryoku_cell.Offset(0, 31).Value '総量（使用量）
+        'nippo_syukei_cell.Offset(0, 35).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 31).Value '良品数（使用量）
+        'nippo_syukei_cell.Offset(0, 36).Value = nippo_syukei_cell.Offset(0, 34).Value - nippo_syukei_cell.Offset(0, 35).Value '不良数（使用量）
+        'nippo_syukei_cell.Offset(0, 37).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 32).Value '生産金額
+        'nippo_syukei_cell.Offset(0, 38).Value = nippo_nyuryoku_cell.Offset(0, 21).Value * nippo_nyuryoku_cell.Offset(0, 32).Value '不良金額
+        'nippo_syukei_cell.Offset(0, 39).Value = nippo_nyuryoku_cell.Offset(0, -4).Value '中子名
+
+        nippo_syukei_cell.Offset(0, 29).Value = nippo_nyuryoku_cell.Offset(0, 29).Value 'ｘ
+        nippo_syukei_cell.Offset(0, 30).Value = nippo_nyuryoku_cell.Offset(0, 30).Value 'ｙ
+        nippo_syukei_cell.Offset(0, 31).Value = nippo_nyuryoku_cell.Offset(0, 31).Value 'その他
+        nippo_syukei_cell.Offset(0, 32).Value = nippo_nyuryoku_cell.Offset(0, -2).Value '良品数
+        nippo_syukei_cell.Offset(0, 33).Value = nippo_nyuryoku_cell.Offset(0, 32).Value '原料砂
+        nippo_syukei_cell.Offset(0, 34).Value = nippo_nyuryoku_cell.Offset(0, 33).Value '単重
+        nippo_syukei_cell.Offset(0, 35).Value = nippo_nyuryoku_cell.Offset(0, 34).Value '単価
+        nippo_syukei_cell.Offset(0, 36).Value = nippo_nyuryoku_cell.Offset(0, -3).Value * nippo_nyuryoku_cell.Offset(0, 4).Value * nippo_nyuryoku_cell.Offset(0, 31).Value '総量（使用量）
+        nippo_syukei_cell.Offset(0, 37).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 33).Value '良品数（使用量）
+        nippo_syukei_cell.Offset(0, 38).Value = nippo_syukei_cell.Offset(0, 35).Value - nippo_syukei_cell.Offset(0, 36).Value '不良数（使用量）
+        nippo_syukei_cell.Offset(0, 39).Value = nippo_nyuryoku_cell.Offset(0, -2).Value * nippo_nyuryoku_cell.Offset(0, 34).Value '生産金額
+        nippo_syukei_cell.Offset(0, 40).Value = nippo_nyuryoku_cell.Offset(0, 21).Value * nippo_nyuryoku_cell.Offset(0, 34).Value '不良金額
+        nippo_syukei_cell.Offset(0, 41).Value = nippo_nyuryoku_cell.Offset(0, -4).Value '中子名
         Set nippo_syukei_cell = nippo_syukei_cell.Offset(1, 0)
         Set nippo_nyuryoku_cell = nippo_nyuryoku_cell.Offset(1, 0)
     Loop
-
 End Sub

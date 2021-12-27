@@ -11,6 +11,7 @@ Public Sub 当月実績追加処理()
    Dim Com1, Com2, Com3, Com5, Com6, Com7, Com8, Com9, Com10 As Long
    Dim Com11, Com12, Com13, Com14, Com15, Com16, Com17, Com18, Com19 As Long
    Dim Com20, Com21, Com22, Com23, Com24, Com28, Com29, Com30, Com31, Com32 As Long
+   Dim Com91, Com92 As Long
    Dim Com4, Com25, Com26, Com27 As Single
    Dim SVtime, count As Long
    Dim WkCom As Double
@@ -184,13 +185,13 @@ Public Sub 当月実績追加処理()
          Com15 = Com15 + first_cell_of_sagyohyo.Offset(0, 18).Value
          Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
-         Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
-         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
-         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
-         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
-         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
-         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
-         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+         Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value '造型不良（廃棄不良）
+         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 32).Value '良品数
+         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 36).Value '砂総量
+         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 37).Value '砂良品
+         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 38).Value '砂不良
+         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 39).Value '生産金額
+         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 40).Value '不良金額
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
       'マシンコード位置設定
@@ -307,7 +308,7 @@ Public Sub 当月実績追加処理()
    '実績追加処理－マシン別
    'マシン別集計
    Dim read_index As Variant
-   read_index = Array(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 30, 34, 35, 36, 37, 38)
+   read_index = Array(4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 32, 36, 37, 38, 39, 40)
    '[0] = 4 // ショット数
    '[1] = 5 // 稼働時間
    '[2] = 6 // 生産時間
@@ -326,12 +327,12 @@ Public Sub 当月実績追加処理()
    '[15] = 19 // その他
    '[16] = 20 // 手直不良
    '[17] = 21 // 造形不良数
-   '[18] = 30 // 良品数
-   '[19] = 34 // 総量
-   '[20] = 35 // 良品数
-   '[21] = 36 // 不良数
-   '[22] = 37 // 生産金額
-   '[23] = 38 // 不良金額
+   '[18] = 32 // 良品数
+   '[19] = 36 // 総量
+   '[20] = 37 // 良品数
+   '[21] = 38 // 不良数
+   '[22] = 39 // 生産金額
+   '[23] = 40 // 不良金額
 
    blank_row = 7
    Do Until first_cell_of_sagyohyo.Value = ""
@@ -347,9 +348,7 @@ Public Sub 当月実績追加処理()
          k = 0
          For Each index In read_index
             If first_cell_of_sagyohyo.Offset(0, index) <> "" Then
-               'Call logger.WriteLog("machine_code = " & machine_code & ", nakago_code = " & nakago_code & ", k = " & k & ", index = " & index & " : " & first_cell_of_sagyohyo.Offset(0, index))
                nippo_by_nakago(k) = nippo_by_nakago(k) + first_cell_of_sagyohyo.Offset(0, index)
-               'Call logger.WriteLog("NAKAGO_SUMMARY : " & nippo_by_nakago(k))
                If i = 9 Then
                   If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
                      count = count + 1
@@ -423,7 +422,7 @@ Public Sub 当月実績追加処理()
       .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
       .AutoFill Destination:=.Resize(1, 24)
    End With
-   Range("AB" & last_row) = Range("AA" & last_row).Value / (Range("AA" & last_row).Value + Range("Z" & last_row).Value)
+   Range("AB" & last_row) = Range("AA" & last_row).Value / (Range("Z" & last_row).Value + Range("AA" & last_row).Value)
    Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
    Range("AD" & last_row) = Range("H" & last_row).Value / Range("G" & last_row).Value
    Range("AE" & last_row) = Range("Z" & last_row).Value * 1000 / Range("H" & last_row).Value
@@ -526,12 +525,12 @@ Public Sub 当月実績追加処理()
          Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
-         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
-         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
-         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
-         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
-         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
-         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 32).Value
+         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 36).Value
+         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 37).Value
+         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 38).Value
+         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 39).Value
+         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 40).Value
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
 
@@ -586,12 +585,9 @@ Public Sub 当月実績追加処理()
          .Offset(0, 33).Formula = "=VLOOKUP(C" & first_cell_of_target_summary.Row & " , 中子データ!B4:K6004,10)"  '設定サイクル
          If Com1 <> 0 Then
             .Offset(0, 32).Value = (Com3 / 60) / Com1 * 3600 '実績サイクル
-         Else
-            .Offset(0, 32).Value = 0
-         End If
-         If .Offset(0, 32).Value <> 0 Then
             .Offset(0, 34).Value = .Offset(0, 33).Value / .Offset(0, 32).Value  '性能稼働率
          Else
+            .Offset(0, 32).Value = 0
             .Offset(0, 34).Value = 0
          End If
          .Offset(0, 35).Value = .Offset(0, 29).Value * .Offset(0, 34).Value * (1 - .Offset(0, 27).Value)  '設備総合効率
@@ -643,7 +639,7 @@ Public Sub 当月実績追加処理()
          .Formula = "=SUM(D7:D" & (last_row - 1) & " )"
          .AutoFill Destination:=.Resize(1, 24)
       End With
-      .Range("AB" & last_row) = .Range("AA" & last_row).Value / (.Range("AA" & last_row).Value + .Range("Z" & last_row).Value)
+      .Range("AB" & last_row) = .Range("AA" & last_row).Value / (.Range("Z" & last_row).Value + .Range("AA" & last_row).Value)
       .Range("AC" & last_row).Formula = "=AVERAGE(AC7:AC" & (last_row - 1) & " )"
       .Range("AD" & last_row) = .Range("H" & last_row).Value / .Range("G" & last_row).Value
       .Range("AE" & last_row) = .Range("Z" & last_row).Value / .Range("H" & last_row).Value
@@ -685,6 +681,8 @@ Public Sub 当月実績追加処理()
    Com23 = 0   '幅木充填
    Com24 = 0   'フィン充填
    Com25 = 0   'キャンドル残
+   Com91 = 0   'x
+   Com92 = 0   'y
    Com26 = 0   'その他
    Com32 = 0   '良品数
 
@@ -735,8 +733,12 @@ Public Sub 当月実績追加処理()
          Com23 = Com23 + first_cell_of_sagyohyo.Offset(0, 26).Value
          Com24 = Com24 + first_cell_of_sagyohyo.Offset(0, 27).Value
          Com25 = Com25 + first_cell_of_sagyohyo.Offset(0, 28).Value
-         Com26 = Com26 + first_cell_of_sagyohyo.Offset(0, 29).Value
-         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+         '追加対応_20211227
+         Com91 = Com91 + first_cell_of_sagyohyo.Offset(0, 29).Value
+         Com92 = Com92 + first_cell_of_sagyohyo.Offset(0, 30).Value
+
+         Com26 = Com26 + first_cell_of_sagyohyo.Offset(0, 31).Value
+         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 32).Value
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
 
       Loop
@@ -748,28 +750,32 @@ Public Sub 当月実績追加処理()
       With first_cell_of_target_summary
          .Offset(0, 2).Value = Com32     '良品数
          .Offset(0, 3).Value = Com18     '不良数
-         .Offset(0, 4).Value = Com19     'ボス割れ表
-         .Offset(0, 5).Value = Com20     'ボス割れ裏
-         .Offset(0, 6).Value = Com21     '幅木割れ
-         .Offset(0, 7).Value = Com22     'フィン割れ
-         .Offset(0, 8).Value = Com23     '幅木充填
-         .Offset(0, 9).Value = Com24     'フィン充填
-         .Offset(0, 10).Value = Com25    'キャンドル残
-         .Offset(0, 11).Value = Com26    'その他
-         .Offset(0, 12).Value = Com17    '手直不良
+         .Offset(0, 4).Value = Com19     'クラック
+         .Offset(0, 5).Value = Com20     '接着
+         .Offset(0, 6).Value = Com21     '充填
+         .Offset(0, 7).Value = Com22     '端数
+         .Offset(0, 8).Value = Com23     '異物混入
+         .Offset(0, 9).Value = Com24     '取り出し落下
+         .Offset(0, 10).Value = Com25    '型しみつき
+         '追加対応_20211227
+         .Offset(0, 11).Value = Com91
+         .Offset(0, 12).Value = Com92
+
+         .Offset(0, 13).Value = Com26    'その他
+         .Offset(0, 14).Value = Com17    '手直不良
          If Com18 <> 0 Then
             WkCom = Com18 / (Com18 + Com32)
          Else
             WkCom = 0
          End If
-         .Offset(0, 13).Value = WkCom    '廃棄不良率
+         .Offset(0, 15).Value = WkCom    '廃棄不良率
 
          If Com17 <> 0 Then
             WkCom = Com17 / (Com17 + Com32)
          Else
             WkCom = 0
          End If
-         .Offset(0, 14).Value = WkCom    '手直不良率
+         .Offset(0, 16).Value = WkCom    '手直不良率
 
       End With
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
@@ -784,6 +790,8 @@ Public Sub 当月実績追加処理()
       Com23 = 0   '幅木充填
       Com24 = 0   'フィン充填
       Com25 = 0   'キャンドル残
+      Com91 = 0
+      Com92 = 0
       Com26 = 0   'その他
       Com32 = 0   '良品数
    Loop
@@ -824,6 +832,8 @@ Public Sub 当月実績追加処理()
    Com24 = 0   'フィン充填
    Com25 = 0   'キャンドル残
    Com26 = 0   'その他
+   Com91 = 0
+   Com92 = 0
    Com32 = 0   '良品数
 
    '追加先シート初期化
@@ -862,8 +872,12 @@ Public Sub 当月実績追加処理()
          Com23 = Com23 + first_cell_of_sagyohyo.Offset(0, 26).Value
          Com24 = Com24 + first_cell_of_sagyohyo.Offset(0, 27).Value
          Com25 = Com25 + first_cell_of_sagyohyo.Offset(0, 28).Value
-         Com26 = Com26 + first_cell_of_sagyohyo.Offset(0, 29).Value
-         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
+         '追加対応_20211227
+         Com91 = Com91 + first_cell_of_sagyohyo.Offset(0, 29).Value
+         Com92 = Com92 + first_cell_of_sagyohyo.Offset(0, 30).Value
+
+         Com26 = Com26 + first_cell_of_sagyohyo.Offset(0, 31).Value
+         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 32).Value
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
 
@@ -879,20 +893,24 @@ Public Sub 当月実績追加処理()
          .Offset(0, 8).Value = Com23     '幅木充填
          .Offset(0, 9).Value = Com24     'フィン充填
          .Offset(0, 10).Value = Com25    'キャンドル残
-         .Offset(0, 11).Value = Com26    'その他
-         .Offset(0, 12).Value = Com17    '手直不良
+
+         '追加対応_20211227
+         .Offset(0, 11).Value = Com91
+         .Offset(0, 12).Value = Com92
+         .Offset(0, 13).Value = Com26    'その他
+         .Offset(0, 14).Value = Com17    '手直不良
          If Com18 <> 0 Then
             WkCom = Com18 / (Com18 + Com32)
          Else
             WkCom = 0
          End If
-         .Offset(0, 13).Value = WkCom    '廃棄不良率
+         .Offset(0, 15).Value = WkCom    '廃棄不良率
          If Com17 <> 0 Then
             WkCom = Com17 / (Com17 + Com32)
          Else
             WkCom = 0
          End If
-         .Offset(0, 14).Value = WkCom    '手直不良率
+         .Offset(0, 16).Value = WkCom    '手直不良率
       End With
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    '作業エリア初期化
@@ -905,6 +923,8 @@ Public Sub 当月実績追加処理()
       Com23 = 0   '幅木充填
       Com24 = 0   'フィン充填
       Com25 = 0   'キャンドル残
+      Com91 = 0
+      Com92 = 0
       Com26 = 0   'その他
       Com32 = 0   '良品数
    Loop
