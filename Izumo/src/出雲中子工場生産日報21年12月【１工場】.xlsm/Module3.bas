@@ -588,7 +588,7 @@ Public Sub 当月実績追加処理()
             .Offset(0, 32).Value = (Com3 / 60) / Com1 * 3600 '実績サイクル
          Else
             .Offset(0, 32).Value = 0
-         End IF
+         End If
          If .Offset(0, 32).Value <> 0 Then
             .Offset(0, 34).Value = .Offset(0, 33).Value / .Offset(0, 32).Value  '性能稼働率
          Else
