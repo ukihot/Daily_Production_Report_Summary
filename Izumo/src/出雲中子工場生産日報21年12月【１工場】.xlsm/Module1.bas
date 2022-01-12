@@ -11,7 +11,7 @@ Sub ÉNÉäÉA()
      myBtn = MsgBox(myMsg, vbYesNo + vbExclamation, myTitle)
      
      If myBtn = vbYes Then
-        Range("G5:M2000,O5:Z2000,AC5:AJ2000,AQ5:AT2000").Select
+        Range("G5:M2000,O5:Z2000,AC5:AL2000,AQ5:AT2000").Select
         Selection.ClearContents
         Range("G5").Select
      End If
