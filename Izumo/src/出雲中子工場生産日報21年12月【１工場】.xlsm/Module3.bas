@@ -606,12 +606,12 @@ Public Sub ìñåéé¿ê—í«â¡èàóù()
          Com16 = Com16 + first_cell_of_sagyohyo.Offset(0, 19).Value
          Com17 = Com17 + first_cell_of_sagyohyo.Offset(0, 20).Value
          Com18 = Com18 + first_cell_of_sagyohyo.Offset(0, 21).Value
-         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 30).Value
-         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 34).Value
-         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 35).Value
-         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 36).Value
-         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 37).Value
-         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 38).Value
+         Com32 = Com32 + first_cell_of_sagyohyo.Offset(0, 32).Value
+         Com27 = Com27 + first_cell_of_sagyohyo.Offset(0, 36).Value
+         Com28 = Com28 + first_cell_of_sagyohyo.Offset(0, 37).Value
+         Com29 = Com29 + first_cell_of_sagyohyo.Offset(0, 38).Value
+         Com30 = Com30 + first_cell_of_sagyohyo.Offset(0, 39).Value
+         Com31 = Com31 + first_cell_of_sagyohyo.Offset(0, 40).Value
          Set first_cell_of_sagyohyo = first_cell_of_sagyohyo.Offset(1, 0)
       Loop
 
