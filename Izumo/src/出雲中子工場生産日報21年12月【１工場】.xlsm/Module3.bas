@@ -84,7 +84,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    'マシン別に並び替え
-   Range(Cells(5, 1), Cells(i, 41)).Sort _
+   Range(Cells(5, 1), Cells(i, 42)).Sort _
    Key1:=Columns("B")
 
    '処理開始位置の設定
@@ -465,7 +465,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    '品名別に並び替え
-   Range(Cells(5, 1), Cells(i, 41)).Sort _
+   Range(Cells(5, 1), Cells(i, 42)).Sort _
    Key1:=Columns("D")
 
    '処理開始位置の設定
@@ -524,7 +524,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    '品名別に並び替え
-   Range(Cells(5, 1), Cells(i, 41)).Sort _
+   Range(Cells(5, 1), Cells(i, 42)).Sort _
    Key1:=Columns("D")
 
    '処理開始位置の設定
@@ -751,7 +751,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    'マシン別に並び替え
-   Range(Cells(5, 1), Cells(i, 41)).Sort _
+   Range(Cells(5, 1), Cells(i, 42)).Sort _
    Key1:=Columns("B")
 
    '処理開始位置の設定
@@ -901,7 +901,7 @@ Public Sub 当月実績追加処理()
    Loop
 
    '品名別に並び替え
-   Range(Cells(5, 1), Cells(i, 41)).Sort _
+   Range(Cells(5, 1), Cells(i, 42)).Sort _
    Key1:=Columns("D")
 
    '処理開始位置の設定
