@@ -41,7 +41,7 @@ Public Sub 当月実績追加処理()
 
    '作業領域クリア（作業表）
    Worksheets(sagyohyo_sheet).Activate
-   Range("A5:AM2000").Select
+   Range("A5:AP2000").Select
    Selection.ClearContents
    Range("A5").Select
 
@@ -711,7 +711,7 @@ Public Sub 当月実績追加処理()
    If last_row > 100000 Then
       last_row = 8
    End If
-   if last_row <> 8 then 
+   If last_row <> 8 Then
       '生産金額順にソート
       Range("A7:AJ" & last_row - 1).Sort _
          Key1:=Range("Z7"), Order1:=xlDescending
@@ -735,7 +735,7 @@ Public Sub 当月実績追加処理()
       '最終行色付
       Range("A" & 7 & ":AJ" & last_row).Interior.ColorIndex = 0
       Range("A" & last_row & ":AJ" & last_row).Interior.ColorIndex = 20
-   End if
+   End If
 
    'マシン別不良集計作業開始
    '作業用ワークシートアクティブ化（作業表）
@@ -787,7 +787,7 @@ Public Sub 当月実績追加処理()
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
    'クリア範囲指定
-   Range(Cells(6, 1), Cells(i, 15)).Select
+   Range(Cells(6, 1), Cells(i, 17)).Select
    Selection.ClearContents
 
    'マシン名取り込み
@@ -929,15 +929,16 @@ Public Sub 当月実績追加処理()
    '処理開始位置の設定
    Set first_cell_of_target_summary = Workbooks(ActiveWorkbook.Name).Worksheets(update_target).Range("A6")
    'インデックス初期値
-   i = 5
+   i = 6
    '実データ領域確認
    Do Until first_cell_of_target_summary.Value = ""
       i = i + 1
       Set first_cell_of_target_summary = first_cell_of_target_summary.Offset(1, 0)
    Loop
+   Debug.Print i
 
    'クリア範囲指定
-   Range(Cells(6, 1), Cells(i, 14)).Select
+   Range(Cells(6, 1), Cells(i, 17)).Select
    Selection.ClearContents
 
    '実績追加処理－品名別

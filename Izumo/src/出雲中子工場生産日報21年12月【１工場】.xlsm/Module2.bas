@@ -2,7 +2,7 @@ Attribute VB_Name = "Module2"
 
 Public Sub NippouShuukei_Update(ByVal nippo_nyuryoku_cell As Object, ByVal nippo_syukei_cell As Object)
     'セル初期化
-    ThisWorkbook.Worksheets("日報集計").Range("A5:AN600").ClearContents
+    ThisWorkbook.Worksheets("日報集計").Range("A5:AP1500").ClearContents
     Range("A5").Select
 
     '作業表作成
