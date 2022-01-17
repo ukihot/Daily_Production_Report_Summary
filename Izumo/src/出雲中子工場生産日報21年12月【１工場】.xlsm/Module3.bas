@@ -61,7 +61,7 @@ Public Sub 当月実績追加処理()
    Do Until nippo_syukei_cell.Value = ""
       With nippo_syukei_cell
       'データ移行
-         For i = 0 To 39
+         For i = 0 To 41
             first_cell_of_sagyohyo.Offset(0, i).Value = .Offset(0, i).Value
          Next i
       End With
