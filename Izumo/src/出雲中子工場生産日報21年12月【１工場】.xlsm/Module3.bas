@@ -287,7 +287,7 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
       .Sort.SortFields.Add _
          Key:=ActiveSheet.Range("D5")
       With .Sort
-         .SetRange Range(Cells(5, 1), Cells(i, 41))
+         .SetRange Range(Cells(5, 1), Cells(i, 42))
          .Apply
       End With
    End With
