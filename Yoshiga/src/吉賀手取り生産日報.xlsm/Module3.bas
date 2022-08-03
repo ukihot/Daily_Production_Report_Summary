@@ -210,8 +210,8 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
          .Offset(0, 11).Value = count         'Œ^ŒğŠ·‰ñ”i‚Ç‚±‚©‚çHj
          .Offset(0, 12).Value = Com8 / 60     'Œ^’²®
          .Offset(0, 13).Value = Com9 / 60     'ŒÌá’â~
-         .Offset(0, 14).Value = Com11 / 60    '‹àŒ^´‘|
-         .Offset(0, 15).Value = Com10 / 60    'I—¹ì‹Æ
+         .Offset(0, 14).Value = Com10 / 60    '‹àŒ^´‘|
+         .Offset(0, 15).Value = Com11 / 60    'I—¹ì‹Æ
          .Offset(0, 16).Value = Com12 / 60    '‚q‚‚‹³¦
          .Offset(0, 17).Value = Com13 / 60    '‘¼‹@‘Î‰‘Ò‚¿
          .Offset(0, 18).Value = Com14 / 60    '—£Œ^Ü
@@ -347,11 +347,10 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
          k = 0
          For Each index In read_index
             If first_cell_of_sagyohyo.Offset(0, index) <> "" Then
-               'Call logger.WriteLog("machine_code = " & machine_code & ", nakago_code = " & nakago_code & ", k = " & k & ", index = " & index & " : " & first_cell_of_sagyohyo.Offset(0, index))
                nippo_by_nakago(k) = nippo_by_nakago(k) + first_cell_of_sagyohyo.Offset(0, index)
-               'Call logger.WriteLog("NAKAGO_SUMMARY : " & nippo_by_nakago(k))
-               If i = 9 Then
-                  If first_cell_of_sagyohyo.Offset(0, i) > 0 Then
+
+               If index = 9 Then
+                  If first_cell_of_sagyohyo.Offset(0, index) > 0 Then
                      count = count + 1
                   End If
                End If
@@ -380,17 +379,17 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
          .Offset(0, 9).Value = nippo_by_nakago(4) / 60     'n‹Æì‹Æ
          .Offset(0, 10).Value = nippo_by_nakago(5) / 60     '‹àŒ^ŒğŠ·
          .Offset(0, 11).Value = nippo_by_nakago(6) / 60    '¸‰·‘Ò‚¿
-         .Offset(0, 12).Value = count      'Œ^ŒğŠ·‰ñ”i‚Ç‚±‚©‚çHj
+         .Offset(0, 12).Value = count      'Œ^ŒğŠ·‰ñ”
          .Offset(0, 13).Value = nippo_by_nakago(7) / 60    'Œ^’²®
          .Offset(0, 14).Value = nippo_by_nakago(8) / 60    'ŒÌá’â~
-         .Offset(0, 15).Value = nippo_by_nakago(10) / 60   '‹àŒ^´‘|
-         .Offset(0, 16).Value = nippo_by_nakago(9) / 60   'I—¹ì‹Æ
+         .Offset(0, 15).Value = nippo_by_nakago(9) / 60
+         .Offset(0, 16).Value = nippo_by_nakago(10) / 60
          .Offset(0, 17).Value = nippo_by_nakago(11) / 60   '‚q‚‚‹³¦
          .Offset(0, 18).Value = nippo_by_nakago(12) / 60   '‘¼‹@‘Î‰‘Ò‚¿
          .Offset(0, 19).Value = nippo_by_nakago(13) / 60   '—£Œ^Ü
          .Offset(0, 20).Value = nippo_by_nakago(14) / 60   '’†qŠ„‚êˆ—
          .Offset(0, 21).Value = nippo_by_nakago(15) / 60   '‚»‚Ì‘¼
-         .Offset(0, 22).Value = nippo_by_nakago(19) / 1000  'g—p—Ê
+         .Offset(0, 22).Value = nippo_by_nakago(19) / 1000  'g—p—Ê  
          .Offset(0, 23).Value = nippo_by_nakago(20) / 1000  '—Ç•ig—p—Ê
          .Offset(0, 24).Value = nippo_by_nakago(21) / 1000  '•s—Çg—p—Ê
          .Offset(0, 25).Value = nippo_by_nakago(22) / 1000  '¶Y‹àŠz
@@ -548,8 +547,8 @@ Public Sub “–ŒÀÑ’Ç‰Áˆ—()
          .Offset(0, 12).Value = count      'Œ^ŒğŠ·‰ñ”
          .Offset(0, 13).Value = Com8 / 60    'Œ^’²®
          .Offset(0, 14).Value = Com9 / 60    'ŒÌá’â~
-         .Offset(0, 15).Value = Com11 / 60   '‹àŒ^´‘|
-         .Offset(0, 16).Value = Com10 / 60   'I—¹ì‹Æ
+         .Offset(0, 15).Value = Com10 / 60
+         .Offset(0, 16).Value = Com11 / 60
          .Offset(0, 17).Value = Com12 / 60   '‚q‚‚‹³¦
          .Offset(0, 18).Value = Com13 / 60   '‘¼‹@‘Î‰‘Ò‚¿
          .Offset(0, 19).Value = Com14 / 60   '—£Œ^Ü
