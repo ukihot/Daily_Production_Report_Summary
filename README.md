@@ -16,4 +16,4 @@ $ cscript vbac.wsf combine
 
 * 20100221改訂 s.tanaka
 * 20130313改訂 k.kometani
-* 20211025大幅改訂 y.motoya
+* 20211025大幅改訂 y.
